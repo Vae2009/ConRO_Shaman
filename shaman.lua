@@ -941,7 +941,7 @@ function ConRO.Shaman.Restoration(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	local _ChainLightning, _ChainLightning_RDY															= ConRO:AbilityReady(Ability.ChainLightning, timeShift);
 	local _EarthElemental, _EarthElemental_RDY, _EarthElemental_CD, _EarthElemental_MaxCD				= ConRO:AbilityReady(Ability.EarthElemental, timeShift);
 	local _LavaBurst, _LavaBurst_RDY																	= ConRO:AbilityReady(Ability.LavaBurst, timeShift);
-		local _LavaBurst_CHARGES																			= ConRO:SpellCharges(Ability.LavaBurst);
+		local _LavaBurst_CHARGES																			= ConRO:SpellCharges(_LavaBurst);
 		local _LavaSurge_BUFF 																				= ConRO:Aura(Buff.LavaSurge, timeShift);
 	local _FlameShock, _FlameShock_RDY																	= ConRO:AbilityReady(Ability.FlameShock, timeShift);
 		local _FlameShock_DEBUFF 																			= ConRO:TargetAura(Debuff.FlameShock, timeShift + 4);
