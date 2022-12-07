@@ -587,11 +587,7 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	ConRO:AbilityBurst(_PrimordialWave, _PrimordialWave_RDY and not _PrimordialWave_BUFF and ConRO:BurstMode(_PrimordialWave));
 
 --Warnings	
-if _WindfuryTotem_RDY and _WindfuryTotem_DUR <= 30 and ConRO_FullButton:IsVisible() then
-	tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
-	_WindfuryTotem_BUFF = true;
-	_WindfuryTotem_DUR = 120;
-end
+
 --Rotations
 	for i = 1, 2, 1 do
 		if not _in_combat then
