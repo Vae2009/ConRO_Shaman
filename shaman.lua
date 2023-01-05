@@ -229,8 +229,8 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 		local _WindGust_BUFF, _WindGust_COUNT = ConRO:Form(Form.WindGust);
 		local _CallLightning, _CallLightning_RDY = ConRO:AbilityReady(PetAbility.CallLightning, timeShift, 'pet');
 		local _Tempest, _Tempest_RDY = ConRO:AbilityReady(PetAbility.Tempest, timeShift, 'pet');
-	local _Stormkeeper, _Stormkeeper_RDY 																= ConRO:AbilityReady(Ability.Stormkeeper, timeShift);
-		local _Stormkeeper_BUFF 																			= ConRO:Aura(Buff.Stormkeeper, timeShift);
+	local _Stormkeeper, _Stormkeeper_RDY = ConRO:AbilityReady(Ability.Stormkeeper, timeShift);
+		local _Stormkeeper_BUFF = ConRO:Aura(Buff.Stormkeeper, timeShift);
 		local _Stormkeeper_CHARGES = ConRO:SpellCharges(_Stormkeeper);
 	local _PrimordialWave, _PrimordialWave_RDY															= ConRO:AbilityReady(Ability.PrimordialWave, timeShift);
 
@@ -351,7 +351,7 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 		end
 
 		if (tChosen[Passive.SurgeofPower.talentID] and _Maelstrom >= 58) or not tChosen[Passive.SurgeofPower.talentID] then
-			if _Stormkeeper_RDY and currentSpell ~= _Stormkeeper and _Stormkeeper_CHARGES >= 1 and ConRO:FullMode(_Stormkeeper) then
+			if _Stormkeeper_RDY and currentSpell ~= _Stormkeeper and not _Stormkeeper_BUFF and ConRO:FullMode(_Stormkeeper) then
 				tinsert(ConRO.SuggestedSpells, _Stormkeeper);
 				_Stormkeeper_RDY = false;
 			end
