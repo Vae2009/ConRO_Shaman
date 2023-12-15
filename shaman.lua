@@ -107,7 +107,7 @@ end
 
 function ConRO.Shaman.Under10(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedSpells)
-	local Racial, Ability, Passive, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Shaman_Ability, ids.Shaman_Passive, ids.Shaman_Form, ids.Shaman_Buff, ids.Shaman_Debuff, ids.Shaman_PetAbility, ids.Shaman_PvPTalent, ids.Glyph;
+	local Racial, Ability, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Shaman_Ability, ids.Shaman_Form, ids.Shaman_Buff, ids.Shaman_Debuff, ids.Shaman_PetAbility, ids.Shaman_PvPTalent, ids.Glyph;
 --Info
 	local _Player_Level																					= UnitLevel("player");
 	local _Player_Percent_Health 																		= ConRO:PercentHealth('player');
@@ -145,7 +145,7 @@ end
 
 function ConRO.Shaman.Under10Def(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedDefSpells)
-	local Racial, Ability, Passive, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Shaman_Ability, ids.Shaman_Passive, ids.Shaman_Form, ids.Shaman_Buff, ids.Shaman_Debuff, ids.Shaman_PetAbility, ids.Shaman_PvPTalent, ids.Glyph;
+	local Racial, Ability, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Shaman_Ability, ids.Shaman_Form, ids.Shaman_Buff, ids.Shaman_Debuff, ids.Shaman_PetAbility, ids.Shaman_PvPTalent, ids.Glyph;
 --Info
 	local _Player_Level																					= UnitLevel("player");
 	local _Player_Percent_Health 																		= ConRO:PercentHealth('player');
@@ -182,7 +182,7 @@ end
 
 function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedSpells)
-	local Racial, Ability, Passive, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Ele_Ability, ids.Ele_Passive, ids.Ele_Form, ids.Ele_Buff, ids.Ele_Debuff, ids.Ele_PetAbility, ids.Ele_PvPTalent, ids.Glyph;
+	local Racial, Ability, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Ele_Ability, ids.Ele_Form, ids.Ele_Buff, ids.Ele_Debuff, ids.Ele_PetAbility, ids.Ele_PvPTalent, ids.Glyph;
 --Info
 	local _Player_Level = UnitLevel("player");
 	local _Player_Percent_Health = ConRO:PercentHealth('player');
@@ -259,7 +259,7 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 
 	local _Shield_COUNT = 0;
 	local _Shield_Threshold = 1;
-		if tChosen[Passive.ElementalOrbit.talentID] then
+		if tChosen[Ability.ElementalOrbit.talentID] then
 			_Shield_Threshold = 2;
 		end
 
@@ -271,12 +271,12 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 			_Shield_COUNT = _Shield_COUNT + 1;
 		end
 
-	if not tChosen[Passive.EchooftheElements.talentID] and _LavaBurst_RDY then
+	if not tChosen[Ability.EchooftheElements.talentID] and _LavaBurst_RDY then
 		_LavaBurst_CHARGES = 1;
 	end
 
 	local _LavaBurst_Mael, _LightningBolt_Mael, _Icefury_Mael = 10, 8, 25;
-		if tChosen[Passive.FlowofPower.talentID] then
+		if tChosen[Ability.FlowofPower.talentID] then
 			_LavaBurst_Mael = _LavaBurst_Mael + 2;
 			_LightningBolt_Mael = _LightningBolt_Mael + 2;
 		end
@@ -300,13 +300,13 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 	end
 
 	local _Maelstrom_COST = 60;
-		if ConRO:TalentChosen(Passive.EyeoftheStorm.talentID, 2) and tChosen[Ability.ElementalBlast.talentID] then
+		if ConRO:TalentChosen(Ability.EyeoftheStorm.talentID, 2) and tChosen[Ability.ElementalBlast.talentID] then
 			_Maelstrom_COST = 75;
-		elseif ConRO:TalentChosen(Passive.EyeoftheStorm.talentID, 1) and tChosen[Ability.ElementalBlast.talentID] then
+		elseif ConRO:TalentChosen(Ability.EyeoftheStorm.talentID, 1) and tChosen[Ability.ElementalBlast.talentID] then
 			_Maelstrom_COST = 83;
-		elseif ConRO:TalentChosen(Passive.EyeoftheStorm.talentID, 2) then
+		elseif ConRO:TalentChosen(Ability.EyeoftheStorm.talentID, 2) then
 			_Maelstrom_COST = 50;
-		elseif ConRO:TalentChosen(Passive.EyeoftheStorm.talentID, 1) then
+		elseif ConRO:TalentChosen(Ability.EyeoftheStorm.talentID, 1) then
 			_Maelstrom_COST = 55;
 		elseif tChosen[Ability.ElementalBlast.talentID] then
 			_Maelstrom_COST = 90;
@@ -327,12 +327,12 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 	ConRO:AbilityRaidBuffs(_EarthShield, _EarthShield_RDY and not ConRO:OneBuff(Buff.EarthShield));
 	ConRO:AbilityRaidBuffs(_LightningShield, _LightningShield_RDY and not _LightningShield_BUFF and (_Shield_COUNT < _Shield_Threshold));
 
-	ConRO:AbilityRaidBuffs(_FlametongueWeapon, _FlametongueWeapon_RDY and not _ImprovedFlametongueWeapon_BUFF and tChosen[Passive.ImprovedFlametongueWeapon.talentID])
+	ConRO:AbilityRaidBuffs(_FlametongueWeapon, _FlametongueWeapon_RDY and not _ImprovedFlametongueWeapon_BUFF and tChosen[Ability.ImprovedFlametongueWeapon.talentID])
 
 --Rotations	
 	for i = 1, 2, 1 do
 		if not _in_combat then
-			if _Stormkeeper_RDY and currentSpell ~= _Stormkeeper and not _Stormkeeper_BUFF and not _Ascendance_BUFF and tChosen[Passive.SurgeofPower.talentID] and ConRO:FullMode(_Stormkeeper) then
+			if _Stormkeeper_RDY and currentSpell ~= _Stormkeeper and not _Stormkeeper_BUFF and not _Ascendance_BUFF and tChosen[Ability.SurgeofPower.talentID] and ConRO:FullMode(_Stormkeeper) then
 				tinsert(ConRO.SuggestedSpells, _Stormkeeper);
 				_Stormkeeper_RDY = false;
 			end
@@ -411,7 +411,7 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 			_Ascendance_RDY = false;
 		end
 
-		if _LavaBurst_RDY and currentSpell ~= _LavaBurst and _Stormkeeper_BUFF and tChosen[Passive.MasteroftheElements.talentID] and not _MasteroftheElements_BUFF and not _SurgeofPower_BUFF then
+		if _LavaBurst_RDY and currentSpell ~= _LavaBurst and _Stormkeeper_BUFF and tChosen[Ability.MasteroftheElements.talentID] and not _MasteroftheElements_BUFF and not _SurgeofPower_BUFF then
 			tinsert(ConRO.SuggestedSpells, _LavaBurst);
 			_LavaSurge_BUFF = false;
 			_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
@@ -429,12 +429,12 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 			_Maelstrom = _Maelstrom - 60;
 		end
 
-		if _ElementalBlast_RDY and _Maelstrom >= _Maelstrom_COST and currentSpell ~= _ElementalBlast and ((ConRO_AutoButton:IsVisible() and (_enemies_in_40yrds <= 3 and _enemies_in_40yrds >= 2)) or ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 2) and tChosen[Passive.EchoesofGreatSundering.talentID] and not _EchoesofGreatSundering_BUFF)) then
+		if _ElementalBlast_RDY and _Maelstrom >= _Maelstrom_COST and currentSpell ~= _ElementalBlast and ((ConRO_AutoButton:IsVisible() and (_enemies_in_40yrds <= 3 and _enemies_in_40yrds >= 2)) or ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 2) and tChosen[Ability.EchoesofGreatSundering.talentID] and not _EchoesofGreatSundering_BUFF)) then
 			tinsert(ConRO.SuggestedSpells, _ElementalBlast);
 			_Maelstrom = _Maelstrom - 75;
 		end
 
-		if _EarthShock_RDY and _Maelstrom >= _Maelstrom_COST and tChosen[Passive.EchoesofGreatSundering.talentID] and not _EchoesofGreatSundering_BUFF and (ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 2) and not tChosen[Ability.ElementalBlast.talentID] then
+		if _EarthShock_RDY and _Maelstrom >= _Maelstrom_COST and tChosen[Ability.EchoesofGreatSundering.talentID] and not _EchoesofGreatSundering_BUFF and (ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 2) and not tChosen[Ability.ElementalBlast.talentID] then
 			tinsert(ConRO.SuggestedSpells, _EarthShock);
 			_Maelstrom = _Maelstrom - 60;
 		end
@@ -454,13 +454,13 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 			_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
 		end
 
-		if _Icefury_RDY and currentSpell ~= _Icefury and tChosen[Passive.ElectrifiedShocks.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 4) or ConRO_SingleButton:IsVisible()) then
+		if _Icefury_RDY and currentSpell ~= _Icefury and tChosen[Ability.ElectrifiedShocks.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 4) or ConRO_SingleButton:IsVisible()) then
 			tinsert(ConRO.SuggestedSpells, _Icefury);
 			_Icefury_RDY = false;
 			_Maelstrom = _Maelstrom + _Icefury_Mael;
 		end
 
-		if _FrostShock_RDY and ((_Icefury_DUR < 6  and not _ElectrifiedShocks_DEBUFF) or (tChosen[Passive.SurgeofPower.talentID] and _Maelstrom >= _Maelstrom_COST and _ElectrifiedShocks_DUR < 3.5)) and _Icefury_COUNT >= 1 and not _SurgeofPower_BUFF and tChosen[Passive.ElectrifiedShocks.talentID] then
+		if _FrostShock_RDY and ((_Icefury_DUR < 6  and not _ElectrifiedShocks_DEBUFF) or (tChosen[Ability.SurgeofPower.talentID] and _Maelstrom >= _Maelstrom_COST and _ElectrifiedShocks_DUR < 3.5)) and _Icefury_COUNT >= 1 and not _SurgeofPower_BUFF and tChosen[Ability.ElectrifiedShocks.talentID] then
 			tinsert(ConRO.SuggestedSpells, _FrostShock);
 			_Icefury_COUNT = _Icefury_COUNT - 1;
 			_ElectrifiedShocks_Debuff = true;
@@ -492,19 +492,19 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 			_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
 		end
 
-		if _LavaBurst_RDY and _LavaBurst_CHARGES >= 1 and tChosen[Passive.DeeplyRootedElements.talentID] and not _Ascendance_BUFF then
+		if _LavaBurst_RDY and _LavaBurst_CHARGES >= 1 and tChosen[Ability.DeeplyRootedElements.talentID] and not _Ascendance_BUFF then
 			tinsert(ConRO.SuggestedSpells, _LavaBurst);
 			_LavaSurge_BUFF = false;
 			_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
 		end
 
-		if _FrostShock_RDY and _Icefury_BUFF and _Icefury_COUNT >= 1 and (tChosen[Passive.FluxMelting.talentID] and not _FluxMelting_BUFF) then
+		if _FrostShock_RDY and _Icefury_BUFF and _Icefury_COUNT >= 1 and (tChosen[Ability.FluxMelting.talentID] and not _FluxMelting_BUFF) then
 			tinsert(ConRO.SuggestedSpells, _FrostShock);
 			_Icefury_COUNT = _Icefury_COUNT - 1;
 			_ElectrifiedShocks_Debuff = true;
 		end
 
-		if _FrostShock_RDY and _Icefury_BUFF and _Icefury_COUNT >= 1 and (tChosen[Passive.ElectrifiedShocks.talentID] and not _ElectrifiedShocks_DEBUFF) and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 4) or ConRO_SingleButton:IsVisible()) then
+		if _FrostShock_RDY and _Icefury_BUFF and _Icefury_COUNT >= 1 and (tChosen[Ability.ElectrifiedShocks.talentID] and not _ElectrifiedShocks_DEBUFF) and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 4) or ConRO_SingleButton:IsVisible()) then
 			tinsert(ConRO.SuggestedSpells, _FrostShock);
 			_Icefury_COUNT = _Icefury_COUNT - 1;
 			_ElectrifiedShocks_Debuff = true;
@@ -550,7 +550,7 @@ end
 
 function ConRO.Shaman.ElementalDef(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedDefSpells)
-	local Racial, Ability, Passive, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Ele_Ability, ids.Ele_Passive, ids.Ele_Form, ids.Ele_Buff, ids.Ele_Debuff, ids.Ele_PetAbility, ids.Ele_PvPTalent, ids.Glyph;
+	local Racial, Ability, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Ele_Ability, ids.Ele_Form, ids.Ele_Buff, ids.Ele_Debuff, ids.Ele_PetAbility, ids.Ele_PvPTalent, ids.Glyph;
 --Info
 	local _Player_Level = UnitLevel("player");
 	local _Player_Percent_Health = ConRO:PercentHealth('player');
@@ -584,7 +584,7 @@ end
 
 function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedSpells)
-	local Racial, Ability, Passive, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Enh_Ability, ids.Enh_Passive, ids.Enh_Form, ids.Enh_Buff, ids.Enh_Debuff, ids.Enh_PetAbility, ids.Enh_PvPTalent, ids.Glyph;
+	local Racial, Ability, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Enh_Ability, ids.Enh_Form, ids.Enh_Buff, ids.Enh_Debuff, ids.Enh_PetAbility, ids.Enh_PvPTalent, ids.Glyph;
 --Info
 	local _Player_Level = UnitLevel("player");
 	local _Player_Percent_Health = ConRO:PercentHealth('player');
@@ -790,7 +790,7 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 			_PrimordialWave_BUFF = true;
 		end
 
-		if _Stormstrike_RDY and _Ascendance_BUFF and tChosen[Passive.ThorimsInvocation.talentID] and (ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) then
+		if _Stormstrike_RDY and _Ascendance_BUFF and tChosen[Ability.ThorimsInvocation.talentID] and (ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) then
 			tinsert(ConRO.SuggestedSpells, _Windstrike);
 		end
 
@@ -805,17 +805,17 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 			_FlameShock_DEBUFF = true;
 		end
 
-		if _LavaLash_RDY and tChosen[Passive.MoltenAssault.talentID] and _FlameShock_DEBUFF then
+		if _LavaLash_RDY and tChosen[Ability.MoltenAssault.talentID] and _FlameShock_DEBUFF then
 			tinsert(ConRO.SuggestedSpells, _LavaLash);
 			_LavaLash_RDY = false;
 		end
 
-		if _LightningBolt_RDY and _PrimordialWave_BUFF and _MaelstromWeapon_COUNT >= 8 and tChosen[Passive.OverflowingMaelstrom.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+		if _LightningBolt_RDY and _PrimordialWave_BUFF and _MaelstromWeapon_COUNT >= 8 and tChosen[Ability.OverflowingMaelstrom.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
 			tinsert(ConRO.SuggestedSpells, _LightningBolt);
 			_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 10;
 		end
 
-		if _MaelstromWeapon_COUNT >= 8 and tChosen[Passive.OverflowingMaelstrom.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+		if _MaelstromWeapon_COUNT >= 8 and tChosen[Ability.OverflowingMaelstrom.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
 			if tChosen[Ability.ElementalBlast.talentID] then
 				if _ElementalBlast_RDY and _ElementalBlast_CHARGES >= 2 or (_MoltenWeapon_BUFF or _IcyEdge_BUFF or _CracklingSurge_BUFF) then
 					tinsert(ConRO.SuggestedSpells, _ElementalBlast);
@@ -830,7 +830,7 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 			end
 		end
 
-		if _IceStrike_RDY and (tChosen[Passive.SwirlingMaelstrom.talentID] or tChosen[Passive.Hailstorm.talentID]) then
+		if _IceStrike_RDY and (tChosen[Ability.SwirlingMaelstrom.talentID] or tChosen[Ability.Hailstorm.talentID]) then
 			tinsert(ConRO.SuggestedSpells, _IceStrike);
 			_IceStrike_RDY = false;
 		end
@@ -850,7 +850,7 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 			_FireNova_RDY = false;
 		end
 
-		if _LavaLash_RDY and tChosen[Passive.MoltenAssault.talentID] and _FlameShock_DUR <= 5 and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+		if _LavaLash_RDY and tChosen[Ability.MoltenAssault.talentID] and _FlameShock_DUR <= 5 and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
 			tinsert(ConRO.SuggestedSpells, _LavaLash);
 			_LavaLash_RDY = false;
 		end
@@ -861,7 +861,7 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 			_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
 		end
 
-		if _MaelstromWeapon_COUNT >= 5 and not tChosen[Passive.OverflowingMaelstrom.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+		if _MaelstromWeapon_COUNT >= 5 and not tChosen[Ability.OverflowingMaelstrom.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
 			if tChosen[Ability.ElementalBlast.talentID] then
 				if _ElementalBlast_RDY and _ElementalBlast_CHARGES >= 2 or (_MoltenWeapon_BUFF or _IcyEdge_BUFF or _CracklingSurge_BUFF) then
 					tinsert(ConRO.SuggestedSpells, _ElementalBlast);
@@ -906,7 +906,7 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 			tinsert(ConRO.SuggestedSpells, _Windstrike);
 		end
 
-		if _Stormstrike_RDY and (tChosen[Passive.DeeplyRootedElements.talentID] and not _Ascendance_BUFF) or (_CrashLightning_BUFF and (ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2)) then
+		if _Stormstrike_RDY and (tChosen[Ability.DeeplyRootedElements.talentID] and not _Ascendance_BUFF) or (_CrashLightning_BUFF and (ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2)) then
 			tinsert(ConRO.SuggestedSpells, _Stormstrike);
 			_Stormstrike_RDY = false;
 		end
@@ -983,7 +983,7 @@ end
 
 function ConRO.Shaman.EnhancementDef(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedDefSpells)
-	local Racial, Ability, Passive, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Enh_Ability, ids.Enh_Passive, ids.Enh_Form, ids.Enh_Buff, ids.Enh_Debuff, ids.Enh_PetAbility, ids.Enh_PvPTalent, ids.Glyph;
+	local Racial, Ability, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Enh_Ability, ids.Enh_Form, ids.Enh_Buff, ids.Enh_Debuff, ids.Enh_PetAbility, ids.Enh_PvPTalent, ids.Glyph;
 --Info
 	local _Player_Level = UnitLevel("player");
 	local _Player_Percent_Health = ConRO:PercentHealth('player');
@@ -1029,7 +1029,7 @@ end
 
 function ConRO.Shaman.Restoration(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedSpells)
-	local Racial, Ability, Passive, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Resto_Ability, ids.Resto_Passive, ids.Resto_Form, ids.Resto_Buff, ids.Resto_Debuff, ids.Resto_PetAbility, ids.Resto_PvPTalent, ids.Glyph;
+	local Racial, Ability, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Resto_Ability, ids.Resto_Form, ids.Resto_Buff, ids.Resto_Debuff, ids.Resto_PetAbility, ids.Resto_PvPTalent, ids.Glyph;
 --Info
 	local _Player_Level = UnitLevel("player");
 	local _Player_Percent_Health = ConRO:PercentHealth('player');
@@ -1049,26 +1049,27 @@ function ConRO.Shaman.Restoration(_, timeShift, currentSpell, gcd, tChosen, pvpC
 --Abilities
 	local _EarthlivingWeapon, _EarthlivingWeapon_RDY = ConRO:AbilityReady(Ability.EarthlivingWeapon, timeShift);
 		local _EarthlivingWeapon_BUFF, _, _EarthlivingWeapon_DUR = ConRO:UnitAura(Buff.EarthlivingWeapon, timeShift, _, _, "Weapon");
-	local _Purge, _Purge_RDY 																			= ConRO:AbilityReady(Ability.Purge, timeShift);
-	local _WindShear, _WindShear_RDY 																	= ConRO:AbilityReady(Ability.WindShear, timeShift);
-	local _LightningBolt, _LightningBolt_RDY															= ConRO:AbilityReady(Ability.LightningBolt, timeShift);
-	local _ChainLightning, _ChainLightning_RDY															= ConRO:AbilityReady(Ability.ChainLightning, timeShift);
-	local _EarthElemental, _EarthElemental_RDY, _EarthElemental_CD, _EarthElemental_MaxCD				= ConRO:AbilityReady(Ability.EarthElemental, timeShift);
-	local _LavaBurst, _LavaBurst_RDY																	= ConRO:AbilityReady(Ability.LavaBurst, timeShift);
-		local _LavaBurst_CHARGES																			= ConRO:SpellCharges(_LavaBurst);
-		local _LavaSurge_BUFF 																				= ConRO:Aura(Buff.LavaSurge, timeShift);
-	local _FlameShock, _FlameShock_RDY																	= ConRO:AbilityReady(Ability.FlameShock, timeShift);
-		local _FlameShock_DEBUFF 																			= ConRO:TargetAura(Debuff.FlameShock, timeShift + 6);
-	local _HealingStreamTotem, _HealingStreamTotem_RDY													= ConRO:AbilityReady(Ability.HealingStreamTotem, timeShift);
+	local _Purge, _Purge_RDY = ConRO:AbilityReady(Ability.Purge, timeShift);
+	local _WindShear, _WindShear_RDY = ConRO:AbilityReady(Ability.WindShear, timeShift);
+	local _LightningBolt, _LightningBolt_RDY = ConRO:AbilityReady(Ability.LightningBolt, timeShift);
+	local _ChainLightning, _ChainLightning_RDY = ConRO:AbilityReady(Ability.ChainLightning, timeShift);
+	local _EarthElemental, _EarthElemental_RDY, _EarthElemental_CD, _EarthElemental_MaxCD = ConRO:AbilityReady(Ability.EarthElemental, timeShift);
+	local _LavaBurst, _LavaBurst_RDY = ConRO:AbilityReady(Ability.LavaBurst, timeShift);
+		local _LavaBurst_CHARGES = ConRO:SpellCharges(_LavaBurst);
+		local _LavaSurge_BUFF = ConRO:Aura(Buff.LavaSurge, timeShift);
+	local _FlameShock, _FlameShock_RDY = ConRO:AbilityReady(Ability.FlameShock, timeShift);
+		local _FlameShock_DEBUFF = ConRO:TargetAura(Debuff.FlameShock, timeShift + 6);
+	local _HealingStreamTotem, _HealingStreamTotem_RDY = ConRO:AbilityReady(Ability.HealingStreamTotem, timeShift);
 	local _Stormkeeper, _Stormkeeper_RDY = ConRO:AbilityReady(Ability.Stormkeeper, timeShift);
 	local _EarthShield, _EarthShield_RDY = ConRO:AbilityReady(Ability.EarthShield, timeShift);
 	local _LightningShield, _LightningShield_RDY = ConRO:AbilityReady(Ability.LightningShield, timeShift);
 		local _LightningShield_BUFF = ConRO:Aura(Buff.LightningShield, timeShift);
+	local _PrimordialWave, _PrimordialWave_RDY = ConRO:AbilityReady(Ability.PrimordialWave, timeShift);
+		local _PrimordialWave_BUFF = ConRO:Aura(Buff.PrimordialWave, timeShift);
 	local _WaterShield, _WaterShield_RDY = ConRO:AbilityReady(Ability.WaterShield, timeShift);
 		local _WaterShield_BUFF = ConRO:Aura(Buff.WaterShield, timeShift);
 
-	local _PrimordialWave, _PrimordialWave_RDY															= ConRO:AbilityReady(Ability.PrimordialWave, timeShift);
-		local _PrimordialWave_BUFF																			= ConRO:Aura(Buff.PrimordialWave, timeShift);
+
 
 --Conditions
 	local _is_moving = ConRO:PlayerSpeed();
@@ -1126,30 +1127,30 @@ end
 
 function ConRO.Shaman.RestorationDef(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedDefSpells)
-	local Racial, Ability, Passive, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Resto_Ability, ids.Resto_Passive, ids.Resto_Form, ids.Resto_Buff, ids.Resto_Debuff, ids.Resto_PetAbility, ids.Resto_PvPTalent, ids.Glyph;
+	local Racial, Ability, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Resto_Ability, ids.Resto_Form, ids.Resto_Buff, ids.Resto_Debuff, ids.Resto_PetAbility, ids.Resto_PvPTalent, ids.Glyph;
 --Info
-	local _Player_Level																					= UnitLevel("player");
-	local _Player_Percent_Health 																		= ConRO:PercentHealth('player');
-	local _is_PvP																						= ConRO:IsPvP();
-	local _in_combat 																					= UnitAffectingCombat('player');
-	local _party_size																					= GetNumGroupMembers();
+	local _Player_Level = UnitLevel("player");
+	local _Player_Percent_Health = ConRO:PercentHealth('player');
+	local _is_PvP = ConRO:IsPvP();
+	local _in_combat = UnitAffectingCombat('player');
+	local _party_size = GetNumGroupMembers();
 
-	local _is_PC																						= UnitPlayerControlled("target");
-	local _is_Enemy 																					= ConRO:TarHostile();
-	local _Target_Health 																				= UnitHealth('target');
-	local _Target_Percent_Health 																		= ConRO:PercentHealth('target');
+	local _is_PC = UnitPlayerControlled("target");
+	local _is_Enemy = ConRO:TarHostile();
+	local _Target_Health = UnitHealth('target');
+	local _Target_Percent_Health = ConRO:PercentHealth('target');
 
 --Resources
-	local _Mana, _Mana_Max, _Mana_Percent																= ConRO:PlayerPower('Mana');
-	local _Maelstrom, _Maelstrom_Max																	= ConRO:PlayerPower('Maelstrom');
+	local _Mana, _Mana_Max, _Mana_Percent = ConRO:PlayerPower('Mana');
+	local _Maelstrom, _Maelstrom_Max = ConRO:PlayerPower('Maelstrom');
 
 --Abilities	
-	local _AstralShift, _AstralShift_RDY 																= ConRO:AbilityReady(Ability.AstralShift, timeShift);
+	local _AstralShift, _AstralShift_RDY = ConRO:AbilityReady(Ability.AstralShift, timeShift);
 
 --Conditions
-	local _is_moving 																					= ConRO:PlayerSpeed();
-	local _enemies_in_melee, _target_in_melee															= ConRO:Targets("Melee");
-	local _target_in_10yrds 																			= CheckInteractDistance("target", 3);
+	local _is_moving = ConRO:PlayerSpeed();
+	local _enemies_in_melee, _target_in_melee = ConRO:Targets("Melee");
+	local _target_in_10yrds = CheckInteractDistance("target", 3);
 
 --Rotations	
 	if _AstralShift_RDY then
