@@ -575,9 +575,10 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	local _FeralLunge, _FeralLunge_RDY = ConRO:AbilityReady(Ability.FeralLunge, timeShift);
 		local _, _FeralLunge_RANGE = ConRO:Targets(Ability.FeralLunge);
 	local _FeralSpirit, _FeralSpirit_RDY, _FeralSpirit_CD = ConRO:AbilityReady(Ability.FeralSpirit, timeShift);
-		local _CracklingSurge_BUFF = ConRO:Aura(Buff.ElementalSpirits.CrashLightning, timeShift);
-		local _IcyEdge_BUFF = ConRO:Aura(Buff.ElementalSpirits.CrashLightning, timeShift);
-		local _MoltenWeapon_BUFF = ConRO:Aura(Buff.ElementalSpirits.CrashLightning, timeShift);
+		local _FeralSpirit_BUFF = ConRO:Aura(Buff.FeralSpirit, timeShift);
+		local _CracklingSurge_BUFF = ConRO:Aura(Buff.ElementalSpirits.CracklingSurge, timeShift);
+		local _IcyEdge_BUFF = ConRO:Aura(Buff.ElementalSpirits.IcyEdge, timeShift);
+		local _MoltenWeapon_BUFF = ConRO:Aura(Buff.ElementalSpirits.MoltenWeapon, timeShift);
 	local _FireNova, _FireNova_RDY = ConRO:AbilityReady(Ability.FireNova, timeShift);
 	local _FlameShock, _FlameShock_RDY = ConRO:AbilityReady(Ability.FlameShock, timeShift + 1);
 		local _FlameShock_DEBUFF, _, _FlameShock_DUR = ConRO:TargetAura(Debuff.FlameShock, timeShift);
@@ -587,6 +588,7 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	local _FrostShock, _FrostShock_RDY, _FrostShock_CD = ConRO:AbilityReady(Ability.FrostShock, timeShift);
 		local _Hailstorm_BUFF = ConRO:Aura(Buff.Hailstorm, timeShift);
 	local _IceStrike, _IceStrike_RDY = ConRO:AbilityReady(Ability.IceStrike, timeShift);
+		local _IceStrike_BUFF = ConRO:Aura(Buff.IceStrike, timeShift);
 	local _LavaBurst, _LavaBurst_RDY = ConRO:AbilityReady(Ability.LavaBurst, timeShift);
 	local _LavaLash, _LavaLash_RDY = ConRO:AbilityReady(Ability.LavaLash, timeShift);
 		local _HotHand_BUFF = ConRO:Aura(Buff.HotHand, timeShift);
@@ -633,304 +635,419 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 
 --Rotations
 	for i = 1, 2, 1 do
-		if not _in_combat then
-			if _TotemicProjection_RDY and not _WindfuryTotem_BUFF and _WindfuryTotem_DUR > 30 then
-				tinsert(ConRO.SuggestedSpells, _TotemicProjection);
-				_FeralSpirit_RDY = false;
+		if tChosen[Ability.ElementalBlast.talentID] then
+			if not _in_combat then
+				if _TotemicProjection_RDY and not _WindfuryTotem_BUFF and _WindfuryTotem_DUR > 30 then
+					_TotemicProjection_RDY = false;
+					tinsert(ConRO.SuggestedSpells, _TotemicProjection);
+				end
+
+				if _WindfuryTotem_RDY and not _WindfuryTotem_BUFF and ConRO_FullButton:IsVisible() then
+					_WindfuryTotem_BUFF = true;
+					tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
+				end
+
+				if _PrimordialWave_RDY and not _FlameShock_DEBUFF and ConRO:FullMode(_PrimordialWave) then
+					_PrimordialWave_RDY = false;
+					_FlameShock_DEBUFF = true;
+					tinsert(ConRO.SuggestedSpells, _PrimordialWave);
+				end
+
+				if _FlameShock_RDY and not _FlameShock_DEBUFF then
+					_FlameShock_DEBUFF = true;
+					tinsert(ConRO.SuggestedSpells, _FlameShock);
+				end
+
+				if _FeralSpirit_RDY and ConRO:FullMode(_FeralSpirit) then
+					_FeralSpirit_RDY = false;
+					tinsert(ConRO.SuggestedSpells, _FeralSpirit);
+				end
+
+				if _LavaLash_RDY and _FlameShock_DEBUFF and not _LashingFlames_DEBUFF then
+					_LavaLash_RDY = false;
+					_LashingFlames_DEBUFF = true;
+					tinsert(ConRO.SuggestedSpells, _LavaLash);
+				end
+
+				if _ElementalBlast_RDY and _MaelstromWeapon_COUNT >= 5 and _ElementalBlast_CHARGES >= 1 then
+					_ElementalBlast_CHARGES = _ElementalBlast_CHARGES - 1;
+					_MaelstromWeapon_COUNT = 0;
+					tinsert(ConRO.SuggestedSpells, _ElementalBlast);
+				end
 			end
 
-			if _WindfuryTotem_RDY and (not _WindfuryTotem_BUFF) and ConRO_FullButton:IsVisible() then
-				tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
-				_WindfuryTotem_BUFF = true;
+			if _LavaLash_RDY and _FlameShock_DEBUFF and (_FlameShock_COUNT < _enemies_in_10yrds) then
+				_LavaLash_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _LavaLash);
+			end
+
+			if _PrimordialWave_RDY and ConRO:CountTier() >= 2 then
+				_PrimordialWave_RDY = false;
+				_PrimordialWave_BUFF = true;
+				tinsert(ConRO.SuggestedSpells, _PrimordialWave);
 			end
 
 			if _FeralSpirit_RDY and ConRO:FullMode(_FeralSpirit) then
-				tinsert(ConRO.SuggestedSpells, _FeralSpirit);
 				_FeralSpirit_RDY = false;
-			end
-
-			if _PrimordialWave_RDY and not _FlameShock_DEBUFF and ConRO:FullMode(_PrimordialWave) then
-				tinsert(ConRO.SuggestedSpells, _PrimordialWave);
-				_PrimordialWave_RDY = false;
-				_FlameShock_DEBUFF = true;
+				tinsert(ConRO.SuggestedSpells, _FeralSpirit);
 			end
 
 			if _FlameShock_RDY and not _FlameShock_DEBUFF then
-				tinsert(ConRO.SuggestedSpells, _FlameShock);
 				_FlameShock_DEBUFF = true;
+				tinsert(ConRO.SuggestedSpells, _FlameShock);
 			end
 
-			if _Stormstrike_RDY and not _Ascendance_BUFF then
-				tinsert(ConRO.SuggestedSpells, _Stormstrike);
-				_Stormstrike_RDY = false;
+			if _LavaLash_RDY and _HotHand_BUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				_LavaLash_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _LavaLash);
 			end
 
-			if _Stormstrike_RDY and _Ascendance_BUFF then
-				tinsert(ConRO.SuggestedSpells, _Windstrike);
+			if _WindfuryTotem_RDY and (not _WindfuryTotem_BUFF) and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) and ConRO_FullButton:IsVisible() then
+				_WindfuryTotem_BUFF = true;
+				tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
 			end
 
-			if _Ascendance_RDY and not _Stormstrike_RDY and ConRO:FullMode(_Ascendance) then
-				tinsert(ConRO.SuggestedSpells, _Ascendance);
-				_Ascendance_RDY = false;
+			if _ElementalBlast_RDY and _MaelstromWeapon_COUNT >= 5 and _ElementalBlast_CHARGES >= _ElementalBlast_MCHARGES and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				_ElementalBlast_CHARGES = _ElementalBlast_CHARGES - 1;
+				_MaelstromWeapon_COUNT = 0;
+				tinsert(ConRO.SuggestedSpells, _ElementalBlast);
 			end
-		end
 
-		if _FeralSpirit_RDY and ConRO:FullMode(_FeralSpirit) then
-			tinsert(ConRO.SuggestedSpells, _FeralSpirit);
-			_FeralSpirit_RDY = true;
-		end
-
-		if _LavaLash_RDY and (_HotHand_BUFF or _AshenCatalyst_COUNT >= 7) and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _LavaLash);
-			_LavaLash_RDY = false;
-		end
-
-		if _Ascendance_RDY and ConRO:FullMode(_Ascendance) then
-			tinsert(ConRO.SuggestedSpells, _Ascendance);
-			_Ascendance_RDY = false;
-		end
-
-		if _LightningBolt_RDY and _PrimordialWave_BUFF and _FlameShock_COUNT >= 2 then
-			tinsert(ConRO.SuggestedSpells, _LightningBolt);
-			_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 10;
-		end
-
-		if _DoomWinds_RDY and ConRO:FullMode(_DoomWinds) then
-			tinsert(ConRO.SuggestedSpells, _DoomWinds);
-			_DoomWinds_RDY = false;
-		end
-
-		if _Stormstrike_RDY and _Ascendance_BUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _Windstrike);
-		end
-
-		if _TotemicProjection_RDY and not _WindfuryTotem_BUFF and _WindfuryTotem_DUR > 30 then
-			tinsert(ConRO.SuggestedSpells, _TotemicProjection);
-			_FeralSpirit_RDY = false;
-		end
-
-		if _WindfuryTotem_RDY and (not _WindfuryTotem_BUFF) and ConRO_FullButton:IsVisible() then
-			tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
-			_WindfuryTotem_BUFF = true;
-		end
-
-		if _Stormstrike_RDY and _DoomWinds_BUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _Stormstrike);
-			_Stormstrike_RDY = false;
-		end
-
-		if _IceStrike_RDY and _DoomWinds_BUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _IceStrike);
-			_IceStrike_RDY = false;
-		end
-
-		if _CrashLightning_RDY and _target_in_melee and (_DoomWinds_BUFF or (not _CrashLightning_BUFF and (ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2))) then
-			tinsert(ConRO.SuggestedSpells, _CrashLightning);
-			_CrashLightning_RDY = false;
-		end
-
-		if _Sundering_RDY and _DoomWinds_BUFF and _target_in_10yrds then
-			tinsert(ConRO.SuggestedSpells, _Sundering);
-			_Sundering_RDY = false;
-		end
-
-		if _FireNova_RDY and _FlameShock_COUNT >= 6 then
-			tinsert(ConRO.SuggestedSpells, _FireNova);
-			_FireNova_RDY = false;
-		end
-
-		if _PrimordialWave_RDY and not _PrimordialWave_BUFF then
-			tinsert(ConRO.SuggestedSpells, _PrimordialWave);
-			_PrimordialWave_RDY = false;
-			_PrimordialWave_BUFF = true;
-		end
-
-		if _Stormstrike_RDY and _Ascendance_BUFF and tChosen[Ability.ThorimsInvocation.talentID] and (ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) then
-			tinsert(ConRO.SuggestedSpells, _Windstrike);
-		end
-
-		if _LavaLash_RDY and not _LashingFlames_DEBUFF and _FlameShock_DEBUFF then
-			tinsert(ConRO.SuggestedSpells, _LavaLash);
-			_LavaLash_RDY = false;
-		end
-
-		if _FlameShock_RDY and _FlameShock_COUNT <= 0 then
-			tinsert(ConRO.SuggestedSpells, _FlameShock);
-			_FlameShock_RDY = false;
-			_FlameShock_DEBUFF = true;
-		end
-
-		if _LavaLash_RDY and tChosen[Ability.MoltenAssault.talentID] and _FlameShock_DEBUFF then
-			tinsert(ConRO.SuggestedSpells, _LavaLash);
-			_LavaLash_RDY = false;
-		end
-
-		if _LightningBolt_RDY and _PrimordialWave_BUFF and _MaelstromWeapon_COUNT >= 8 and tChosen[Ability.OverflowingMaelstrom.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _LightningBolt);
-			_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 10;
-		end
-
-		if _MaelstromWeapon_COUNT >= 8 and tChosen[Ability.OverflowingMaelstrom.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
-			if tChosen[Ability.ElementalBlast.talentID] then
-				if _ElementalBlast_RDY and _ElementalBlast_CHARGES >= 2 or (_MoltenWeapon_BUFF or _IcyEdge_BUFF or _CracklingSurge_BUFF) then
-					tinsert(ConRO.SuggestedSpells, _ElementalBlast);
-					_ElementalBlast_CHARGES = _ElementalBlast_CHARGES - 1;
-					_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 10;
+			if ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				if _LightningBolt_RDY and _PrimordialWave_BUFF and _MaelstromWeapon_COUNT >= 8 then
+					_PrimordialWave_BUFF = false;
+					_MaelstromWeapon_COUNT = 0;
+					tinsert(ConRO.SuggestedSpells, _LightningBolt);
 				end
 			else
-				if _LavaBurst_RDY and _MoltenWeapon_BUFF then
-					_LavaBurst_RDY = false;
-					_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 10;
+				if _LightningBolt_RDY and _PrimordialWave_BUFF and _MaelstromWeapon_COUNT >= 5 then
+					_PrimordialWave_BUFF = false;
+					_MaelstromWeapon_COUNT = 0;
+					tinsert(ConRO.SuggestedSpells, _LightningBolt);
 				end
 			end
-		end
 
-		if _IceStrike_RDY and (tChosen[Ability.SwirlingMaelstrom.talentID] or tChosen[Ability.Hailstorm.talentID]) then
-			tinsert(ConRO.SuggestedSpells, _IceStrike);
-			_IceStrike_RDY = false;
-		end
-
-		if _FrostShock_RDY and _Hailstorm_BUFF then
-			tinsert(ConRO.SuggestedSpells, _FrostShock);
-			_FrostShock_RDY = false;
-		end
-
-		if _Sundering_RDY and _target_in_10yrds and (ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) then
-			tinsert(ConRO.SuggestedSpells, _Sundering);
-			_Sundering_RDY = false;
-		end
-
-		if _FireNova_RDY and _FlameShock_COUNT >= 4 then
-			tinsert(ConRO.SuggestedSpells, _FireNova);
-			_FireNova_RDY = false;
-		end
-
-		if _LavaLash_RDY and tChosen[Ability.MoltenAssault.talentID] and _FlameShock_DUR <= 5 and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _LavaLash);
-			_LavaLash_RDY = false;
-		end
-
-		if _ElementalBlast_RDY and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2 and _enemies_in_10yrds < 3)) then
-			tinsert(ConRO.SuggestedSpells, _ElementalBlast);
-			_ElementalBlast_CHARGES = _ElementalBlast_CHARGES - 1;
-			_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
-		end
-
-		if _MaelstromWeapon_COUNT >= 5 and not tChosen[Ability.OverflowingMaelstrom.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
-			if tChosen[Ability.ElementalBlast.talentID] then
-				if _ElementalBlast_RDY and _ElementalBlast_CHARGES >= 2 or (_MoltenWeapon_BUFF or _IcyEdge_BUFF or _CracklingSurge_BUFF) then
-					tinsert(ConRO.SuggestedSpells, _ElementalBlast);
-					_ElementalBlast_CHARGES = _ElementalBlast_CHARGES - 1;
-					_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
-				end
-			else
-				if _LavaBurst_RDY and _MoltenWeapon_BUFF then
-					_LavaBurst_RDY = false;
-					_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
-				end
+			if _ElementalBlast_RDY and _ElementalBlast_CHARGES >= 1 and ((_MaelstromWeapon_COUNT >= 8 and _FeralSpirit_BUFF) or (_MaelstromWeapon_COUNT >= 10 and (_enemies_in_10yrds <= 3 and _enemies_in_10yrds >= 2))) then
+				_ElementalBlast_CHARGES = _ElementalBlast_CHARGES - 1;
+				_MaelstromWeapon_COUNT = 0;
+				tinsert(ConRO.SuggestedSpells, _ElementalBlast);
 			end
-		end
 
-		if _ChainLightning_RDY and _MaelstromWeapon_COUNT >= 8 and (ConRO_AutoButton:IsVisible() and _enemies_in_melee >= 2) then
-			tinsert(ConRO.SuggestedSpells, _ChainLightning);
-			_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
-		end
+			if _LavaBurst_RDY and not tChosen[Ability.ElementalBlast.talentID] and _MaelstromWeapon_COUNT >= 5 and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				_LavaBurst_RDY = false;
+				_MaelstromWeapon_COUNT = 0;
+				tinsert(ConRO.SuggestedSpells, _LavaBurst);
+			end
 
-		if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 10 and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _LightningBolt);
-			_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
-		end
+			if _ChainLightning_RDY and _MaelstromWeapon_COUNT >= 10 and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+				_MaelstromWeapon_COUNT = 0;
+				tinsert(ConRO.SuggestedSpells, _ChainLightning);
+			end
 
-		if _WindfuryTotem_RDY and _WindfuryTotem_DUR <= 10 and ConRO_FullButton:IsVisible() then
-			tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
-			_WindfuryTotem_BUFF = true;
-			_WindfuryTotem_DUR = 120;
-		end
+			if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 10 and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				_MaelstromWeapon_COUNT = 0;
+				tinsert(ConRO.SuggestedSpells, _LightningBolt);
+			end
 
-		if _CrashLightning_RDY and _target_in_melee and _ChainCrashLightning_BUFF and (ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) then
-			tinsert(ConRO.SuggestedSpells, _CrashLightning);
-			_CrashLightning_RDY = false;
-		end
+			if _WindfuryTotem_RDY and (not _WindfuryTotem_BUFF) and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_SingleButton:IsVisible()) and ConRO_FullButton:IsVisible() then
+				_WindfuryTotem_BUFF = true;
+				tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
+			end
 
-		if _LavaLash_RDY and _AshenCatalyst_COUNT >= 8 and _CrashLightning_BUFF then
-			tinsert(ConRO.SuggestedSpells, _LavaLash);
-			_LavaLash_RDY = false;
-		end
+			if _PrimordialWave_RDY and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				_PrimordialWave_RDY = false;
+				_PrimordialWave_BUFF = true;
+				tinsert(ConRO.SuggestedSpells, _PrimordialWave);
+			end
 
-		if _Stormstrike_RDY and _Ascendance_BUFF and (ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) then
-			tinsert(ConRO.SuggestedSpells, _Windstrike);
-		end
+			if _CrashLightning_RDY and _target_in_melee and not _CrashLightning_BUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+				_CrashLightning_RDY = false;
+				CrashLightning_BUFF = true;
+				tinsert(ConRO.SuggestedSpells, _CrashLightning);
+			end
 
-		if _Stormstrike_RDY and (tChosen[Ability.DeeplyRootedElements.talentID] and not _Ascendance_BUFF) or (_CrashLightning_BUFF and (ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2)) then
-			tinsert(ConRO.SuggestedSpells, _Stormstrike);
-			_Stormstrike_RDY = false;
-		end
+			if _FireNova_RDY and _FlameShock_COUNT >= 6 then
+				_FireNova_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _FireNova);
+			end
 
-		if (_CrashLightning_BUFF and (ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2)) and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+			if _LavaLash_RDY and tChosen[Ability.LashingFlames.talentID] and not _LashingFlames_DEBUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+				_LavaLash_RDY = false;
+				_LashingFlames_DEBUFF = true;
+				tinsert(ConRO.SuggestedSpells, _LavaLash);
+			end
+
 			if _IceStrike_RDY then
-				tinsert(ConRO.SuggestedSpells, _IceStrike);
 				_IceStrike_RDY = false;
+				_IceStrike_BUFF = true;
+				tinsert(ConRO.SuggestedSpells, _IceStrike);
+			end
+
+			if _FrostShock_RDY and _Hailstorm_BUFF then
+				tinsert(ConRO.SuggestedSpells, _FrostShock);
+				_FrostShock_RDY = false;
 			end
 
 			if _LavaLash_RDY then
-				tinsert(ConRO.SuggestedSpells, _LavaLash);
 				_LavaLash_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _LavaLash);
 			end
-		end
 
-		if _FireNova_RDY and _FlameShock_COUNT >= 2 then
-			tinsert(ConRO.SuggestedSpells, _FireNova);
-			_FireNova_RDY = false;
-		end
+			if _Sundering_RDY and _target_in_10yrds and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+				_Sundering_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _Sundering);
+			end
 
-		if _CrashLightning_RDY and _target_in_melee and (ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) then
-			tinsert(ConRO.SuggestedSpells, _CrashLightning);
-			_CrashLightning_RDY = false;
-		end
+			if _FireNova_RDY and _FlameShock_COUNT >= 3 then
+				tinsert(ConRO.SuggestedSpells, _FireNova);
+				_FireNova_RDY = false;
+			end
 
-		if _MaelstromWeapon_COUNT >= 5 then
-			if (ConRO_AutoButton:IsVisible() and _enemies_in_melee >= 2) then
-				if _ChainLightning_RDY then
-					tinsert(ConRO.SuggestedSpells, _ChainLightning);
-					_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
+			if _Stormstrike_RDY then
+				_Stormstrike_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _Stormstrike);
+			end
+
+			if _Sundering_RDY and _target_in_10yrds then
+				_Sundering_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _Sundering);
+			end
+
+			if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 5 and tChosen[Ability.Hailstorm.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				_MaelstromWeapon_COUNT = 0;
+				tinsert(ConRO.SuggestedSpells, _LightningBolt);
+			end
+
+			if _FrostShock_RDY and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				tinsert(ConRO.SuggestedSpells, _FrostShock);
+				_FrostShock_RDY = false;
+			end
+
+			if _CrashLightning_RDY and _target_in_melee then
+				_CrashLightning_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _CrashLightning);
+			end
+
+			if _ElementalBlast_RDY and _ElementalBlast_CHARGES >= 1 and _MaelstromWeapon_COUNT >= 5 and (_enemies_in_10yrds <= 3 and _enemies_in_10yrds >= 2) then
+				_ElementalBlast_CHARGES = _ElementalBlast_CHARGES - 1;
+				_MaelstromWeapon_COUNT = 0;
+				tinsert(ConRO.SuggestedSpells, _ElementalBlast);
+			end
+
+			if _ChainLightning_RDY and _MaelstromWeapon_COUNT >= 5 and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+				_MaelstromWeapon_COUNT = 0;
+				tinsert(ConRO.SuggestedSpells, _ChainLightning);
+			end
+
+			if _FlameShock_RDY and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				tinsert(ConRO.SuggestedSpells, _FlameShock);
+				_FlameShock_RDY = false;
+			end
+
+			if _WindfuryTotem_RDY and _WindfuryTotem_DUR <= 60 and ConRO_FullButton:IsVisible() then
+				_WindfuryTotem_BUFF = true;
+				_WindfuryTotem_DUR = 120;
+				tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
+			end
+		else
+			if not _in_combat then
+				if _TotemicProjection_RDY and not _WindfuryTotem_BUFF and _WindfuryTotem_DUR > 30 then
+					_TotemicProjection_RDY = false;
+					tinsert(ConRO.SuggestedSpells, _TotemicProjection);
 				end
-			else
-				if _LightningBolt_RDY then
-					tinsert(ConRO.SuggestedSpells, _LightningBolt);
-					_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
+
+				if _WindfuryTotem_RDY and not _WindfuryTotem_BUFF and ConRO_FullButton:IsVisible() then
+					_WindfuryTotem_BUFF = true;
+					tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
+				end
+
+				if _PrimordialWave_RDY and not _FlameShock_DEBUFF and ConRO:FullMode(_PrimordialWave) then
+					_PrimordialWave_RDY = false;
+					_FlameShock_DEBUFF = true;
+					tinsert(ConRO.SuggestedSpells, _PrimordialWave);
+				end
+
+				if _FlameShock_RDY and not _FlameShock_DEBUFF then
+					_FlameShock_DEBUFF = true;
+					tinsert(ConRO.SuggestedSpells, _FlameShock);
+				end
+
+				if _FeralSpirit_RDY and ConRO:FullMode(_FeralSpirit) then
+					_FeralSpirit_RDY = false;
+					tinsert(ConRO.SuggestedSpells, _FeralSpirit);
 				end
 			end
-		end
 
-		if _Sundering_RDY and _target_in_10yrds and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _Sundering);
-			_Sundering_RDY = false;
-		end
+			if _LavaLash_RDY and _FlameShock_DEBUFF and (_FlameShock_COUNT < _enemies_in_10yrds) then
+				_LavaLash_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _LavaLash);
+			end
 
-		if _FireNova_RDY and _FlameShock_DEBUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _FireNova);
-			_FireNova_RDY = false;
-		end
+			if _Stormstrike_RDY and _Ascendance_BUFF and tChosen[Ability.DeeplyRootedElements.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				tinsert(ConRO.SuggestedSpells, _Windstrike);
+			end
 
-		if _FrostShock_RDY and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _FrostShock);
-			_FrostShock_RDY = false;
-		end
+			if _FlameShock_RDY and not _FlameShock_DEBUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+				_FlameShock_DEBUFF = true;
+				tinsert(ConRO.SuggestedSpells, _FlameShock);
+			end
 
-		if _CrashLightning_RDY and _target_in_melee and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _CrashLightning);
-			_CrashLightning_RDY = false;
-		end
+			if _PrimordialWave_RDY and ConRO:CountTier() >= 2 then
+				_PrimordialWave_RDY = false;
+				_PrimordialWave_BUFF = true;
+				tinsert(ConRO.SuggestedSpells, _PrimordialWave);
+			end
 
-		if _FlameShock_RDY and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _FlameShock);
-			_FlameShock_RDY = false;
-		end
+			if _FeralSpirit_RDY and ConRO:FullMode(_FeralSpirit) then
+				_FeralSpirit_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _FeralSpirit);
+			end
 
-		if _WindfuryTotem_RDY and ConRO_FullButton:IsVisible() then
-			tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
-			_WindfuryTotem_BUFF = true;
-			_WindfuryTotem_DUR = 120;
+			if _Ascendance_RDY and ConRO:FullMode(_Ascendance) then
+				_Ascendance_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _Ascendance);
+			end
+
+			if _Stormstrike_RDY and _Ascendance_BUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+				tinsert(ConRO.SuggestedSpells, _Windstrike);
+			end
+
+			if _ChainLightning_RDY and _MaelstromWeapon_COUNT >= 10 and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+				_MaelstromWeapon_COUNT = 0;
+				tinsert(ConRO.SuggestedSpells, _ChainLightning);
+			end
+
+			if _WindfuryTotem_RDY and (not _WindfuryTotem_BUFF) and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible()) and ConRO_FullButton:IsVisible() then
+				_WindfuryTotem_BUFF = true;
+				tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
+			end
+
+			if _LightningBolt_RDY and _PrimordialWave_BUFF and _MaelstromWeapon_COUNT >= 5 and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+				_PrimordialWave_BUFF = false;
+				_MaelstromWeapon_COUNT = 0;
+				tinsert(ConRO.SuggestedSpells, _LightningBolt);
+			end
+
+			if _DoomWinds_RDY and ConRO:FullMode(_DoomWinds) then
+				_DoomWinds_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _DoomWinds);
+			end
+
+			if _Stormstrike_RDY and _Ascendance_BUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				tinsert(ConRO.SuggestedSpells, _Windstrike);
+			end
+
+			if _Stormstrike_RDY and tChosen[Ability.DeeplyRootedElements.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				_Stormstrike_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _Stormstrike);
+			end
+
+			if _WindfuryTotem_RDY and (not _WindfuryTotem_BUFF) and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) and ConRO_FullButton:IsVisible() then
+				_WindfuryTotem_BUFF = true;
+				tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
+			end
+
+			if _Stormstrike_RDY and tChosen[Ability.Ascendance.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				_Stormstrike_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _Stormstrike);
+			end
+
+			if _LightningBolt_RDY and _PrimordialWave_BUFF and _MaelstromWeapon_COUNT >= 5 then
+				_PrimordialWave_BUFF = false;
+				_MaelstromWeapon_COUNT = 0;
+				tinsert(ConRO.SuggestedSpells, _LightningBolt);
+			end
+
+			if _IceStrike_RDY and _DoomWinds_BUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				_IceStrike_RDY = false;
+				_IceStrike_BUFF = true;
+				tinsert(ConRO.SuggestedSpells, _IceStrike);
+			end
+
+			if _CrashLightning_RDY and _target_in_melee and _DoomWinds_BUFF or (not _CrashLightning_BUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible())) then
+				_CrashLightning_RDY = false;
+				CrashLightning_BUFF = true;
+				tinsert(ConRO.SuggestedSpells, _CrashLightning);
+			end
+
+			if _FireNova_RDY and _FlameShock_COUNT >= 6 then
+				_FireNova_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _FireNova);
+			end
+
+			if _Sundering_RDY and _target_in_10yrds then
+				_Sundering_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _Sundering);
+			end
+
+			if _FlameShock_RDY and not _FlameShock_DEBUFF then
+				_FlameShock_DEBUFF = true;
+				tinsert(ConRO.SuggestedSpells, _FlameShock);
+			end
+
+			if _Stormstrike_RDY and tChosen[Ability.DeeplyRootedElements.talentID] then
+				_Stormstrike_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _Stormstrike);
+			end
+
+			if _FireNova_RDY and _FlameShock_COUNT >= 3 then
+				_FireNova_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _FireNova);
+			end
+
+			if _LavaLash_RDY and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				_LavaLash_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _LavaLash);
+			end
+
+			if _IceStrike_RDY and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
+				_IceStrike_RDY = false;
+				_IceStrike_BUFF = true;
+				tinsert(ConRO.SuggestedSpells, _IceStrike);
+			end
+
+			if _CrashLightning_RDY and _target_in_melee then
+				_CrashLightning_RDY = false;
+				CrashLightning_BUFF = true;
+				tinsert(ConRO.SuggestedSpells, _CrashLightning);
+			end
+
+			if _Stormstrike_RDY then
+				_Stormstrike_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _Stormstrike);
+			end
+
+			if _IceStrike_RDY then
+				_IceStrike_RDY = false;
+				_IceStrike_BUFF = true;
+				tinsert(ConRO.SuggestedSpells, _IceStrike);
+			end
+
+			if _ChainLightning_RDY and _MaelstromWeapon_COUNT >= 5 and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+				_MaelstromWeapon_COUNT = 0;
+				tinsert(ConRO.SuggestedSpells, _ChainLightning);
+			end
+
+			if _FireNova_RDY then
+				tinsert(ConRO.SuggestedSpells, _FireNova);
+				_FireNova_RDY = false;
+			end
+
+			if _FrostShock_RDY then
+				tinsert(ConRO.SuggestedSpells, _FrostShock);
+				_FrostShock_RDY = false;
+			end
+
+			if _FlameShock_RDY then
+				tinsert(ConRO.SuggestedSpells, _FlameShock);
+				_FlameShock_RDY = false;
+			end
+
+			if _WindfuryTotem_RDY and _WindfuryTotem_DUR <= 60 and ConRO_FullButton:IsVisible() then
+				_WindfuryTotem_BUFF = true;
+				_WindfuryTotem_DUR = 120;
+				tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
+			end
 		end
 	end
 	return nil;
@@ -983,6 +1100,7 @@ function ConRO.Shaman.Restoration(_, timeShift, currentSpell, gcd, tChosen, pvpC
 		local _LavaSurge_BUFF = ConRO:Aura(Buff.LavaSurge, timeShift);
 	local _FlameShock, _FlameShock_RDY = ConRO:AbilityReady(Ability.FlameShock, timeShift);
 		local _FlameShock_DEBUFF = ConRO:TargetAura(Debuff.FlameShock, timeShift + 6);
+	local _HealingRain, _HealingRain_RDY = ConRO:AbilityReady(Ability.HealingRain, timeShift);
 	local _HealingStreamTotem, _HealingStreamTotem_RDY = ConRO:AbilityReady(Ability.HealingStreamTotem, timeShift);
 	local _Stormkeeper, _Stormkeeper_RDY = ConRO:AbilityReady(Ability.Stormkeeper, timeShift);
 	local _EarthShield, _EarthShield_RDY = ConRO:AbilityReady(Ability.EarthShield, timeShift);
@@ -1014,35 +1132,38 @@ function ConRO.Shaman.Restoration(_, timeShift, currentSpell, gcd, tChosen, pvpC
 
 --Rotations
 	if _is_Enemy then
-		if _Stormkeeper_RDY then
-			tinsert(ConRO.SuggestedSpells, _Stormkeeper);
-			_Stormkeeper_RDY = false;
-		end
+		for i = 1, 2, 1 do
+			if _Stormkeeper_RDY then
+				_Stormkeeper_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _Stormkeeper);
+			end
 
-		if _FlameShock_RDY and not _FlameShock_DEBUFF then
-			tinsert(ConRO.SuggestedSpells, _FlameShock);
-			_FlameShock_DEBUFF = true;
-		end
+			if _HealingRain_RDY and tChosen[Ability.AcidRain.talentID] then
+				_HealingRain_RDY = false;
+				tinsert(ConRO.SuggestedSpells, _HealingRain);
+			end
 
-		if _LavaBurst_RDY and _LavaBurst_CHARGES >= 1 and ConRO_SingleButton:IsVisible() then
-			tinsert(ConRO.SuggestedSpells, _LavaBurst);
-			_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
-		end
+			if _ChainLightning_RDY and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+				tinsert(ConRO.SuggestedSpells, _ChainLightning);
+			end
 
-		if _LavaBurst_RDY and _LavaSurge_BUFF and ConRO_AoEButton:IsVisible() then
-			tinsert(ConRO.SuggestedSpells, _LavaBurst);
-			_LavaSurge_BUFF = false;
-		end
+			if _FlameShock_RDY and not _FlameShock_DEBUFF then
+				_FlameShock_DEBUFF = true;
+				tinsert(ConRO.SuggestedSpells, _FlameShock);
+			end
 
-		if _ChainLightning_RDY and ConRO_AoEButton:IsVisible() then
-			tinsert(ConRO.SuggestedSpells, _ChainLightning);
-		end
+			if _LavaBurst_RDY and (_LavaBurst_CHARGES >= 1 or _LavaSurge_BUFF) then
+				_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
+				_LavaSurge_BUFF = false;
+				tinsert(ConRO.SuggestedSpells, _LavaBurst);
+			end
 
-		if _LightningBolt_RDY and ConRO_SingleButton:IsVisible() then
-			tinsert(ConRO.SuggestedSpells, _LightningBolt);
+			if _LightningBolt_RDY then
+				tinsert(ConRO.SuggestedSpells, _LightningBolt);
+			end
 		end
 	end
-return nil;
+	return nil;
 end
 
 function ConRO.Shaman.RestorationDef(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
