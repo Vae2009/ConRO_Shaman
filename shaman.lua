@@ -572,8 +572,6 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	local _EarthShield, _EarthShield_RDY = ConRO:AbilityReady(Ability.EarthShield, timeShift);
 	local _ElementalBlast, _ElementalBlast_RDY = ConRO:AbilityReady(Ability.ElementalBlast, timeShift);
 		local _ElementalBlast_CHARGES, _ElementalBlast_MCHARGES = ConRO:SpellCharges(_ElementalBlast);
-	local _FeralLunge, _FeralLunge_RDY = ConRO:AbilityReady(Ability.FeralLunge, timeShift);
-		local _, _FeralLunge_RANGE = ConRO:Targets(Ability.FeralLunge);
 	local _FeralSpirit, _FeralSpirit_RDY, _FeralSpirit_CD = ConRO:AbilityReady(Ability.FeralSpirit, timeShift);
 		local _FeralSpirit_BUFF = ConRO:Aura(Buff.FeralSpirit, timeShift);
 		local _CracklingSurge_BUFF = ConRO:Aura(Buff.ElementalSpirits.CracklingSurge, timeShift);
@@ -607,9 +605,6 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	local _Sundering, _Sundering_RDY = ConRO:AbilityReady(Ability.Sundering, timeShift);
 	local _TotemicProjection, _TotemicProjection_RDY = ConRO:AbilityReady(Ability.TotemicProjection, timeShift);
 	local _WindShear, _WindShear_RDY = ConRO:AbilityReady(Ability.WindShear, timeShift);
-	local _WindfuryTotem, _WindfuryTotem_RDY = ConRO:AbilityReady(Ability.WindfuryTotem, timeShift);
-		local _WindfuryTotem_BUFF = ConRO:Form(Form.WindfuryTotem);
-		local _, _WindfuryTotem_DUR = ConRO:Totem(_WindfuryTotem);
 	local _WindfuryWeapon, _WindfuryWeapon_RDY = ConRO:AbilityReady(Ability.WindfuryWeapon, timeShift);
 		local _WindfuryWeapon_BUFF, _, _WindfuryWeapon_DUR = ConRO:UnitAura(Buff.WindfuryWeapon, timeShift, _, _, "Weapon");
 
@@ -618,7 +613,6 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 --Indicators
 	ConRO:AbilityInterrupt(_WindShear, _WindShear_RDY and ConRO:Interrupt());
 	ConRO:AbilityPurge(_Purge, _Purge_RDY and ConRO:Purgable());
-	ConRO:AbilityMovement(_FeralLunge, _FeralLunge_RDY and _FeralLunge_RANGE);
 
 	ConRO:AbilityRaidBuffs(_EarthShield, _EarthShield_RDY and not ConRO:OneBuff(ids.Enh_Buff.EarthShield));
 	ConRO:AbilityRaidBuffs(_LightningShield, _LightningShield_RDY and not _LightningShield_BUFF);
@@ -628,7 +622,6 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	ConRO:AbilityBurst(_Ascendance, _Ascendance_RDY and not _Stormstrike_RDY and ConRO:BurstMode(_Ascendance));
 	ConRO:AbilityBurst(_DoomWinds, _DoomWinds_RDY and ConRO:BurstMode(_DoomWinds));
 	ConRO:AbilityBurst(_FeralSpirit, _FeralSpirit_RDY and ConRO:BurstMode(_FeralSpirit));
-	ConRO:AbilityBurst(_WindfuryTotem, _WindfuryTotem_RDY and not _WindfuryTotem_BUFF and ConRO_BurstButton:IsVisible());
 	ConRO:AbilityBurst(_PrimordialWave, _PrimordialWave_RDY and not _PrimordialWave_BUFF and ConRO:BurstMode(_PrimordialWave));
 
 --Warnings	
@@ -637,16 +630,6 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	for i = 1, 2, 1 do
 		if tChosen[Ability.ElementalBlast.talentID] then
 			if not _in_combat then
-				if _TotemicProjection_RDY and not _WindfuryTotem_BUFF and _WindfuryTotem_DUR > 30 then
-					_TotemicProjection_RDY = false;
-					tinsert(ConRO.SuggestedSpells, _TotemicProjection);
-				end
-
-				if _WindfuryTotem_RDY and not _WindfuryTotem_BUFF and ConRO_FullButton:IsVisible() then
-					_WindfuryTotem_BUFF = true;
-					tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
-				end
-
 				if _PrimordialWave_RDY and not _FlameShock_DEBUFF and ConRO:FullMode(_PrimordialWave) then
 					_PrimordialWave_RDY = false;
 					_FlameShock_DEBUFF = true;
@@ -702,11 +685,6 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 				tinsert(ConRO.SuggestedSpells, _LavaLash);
 			end
 
-			if _WindfuryTotem_RDY and (not _WindfuryTotem_BUFF) and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) and ConRO_FullButton:IsVisible() then
-				_WindfuryTotem_BUFF = true;
-				tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
-			end
-
 			if _ElementalBlast_RDY and _MaelstromWeapon_COUNT >= 5 and _ElementalBlast_CHARGES >= _ElementalBlast_MCHARGES and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
 				_ElementalBlast_CHARGES = _ElementalBlast_CHARGES - 1;
 				_MaelstromWeapon_COUNT = 0;
@@ -747,11 +725,6 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 			if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 10 and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
 				_MaelstromWeapon_COUNT = 0;
 				tinsert(ConRO.SuggestedSpells, _LightningBolt);
-			end
-
-			if _WindfuryTotem_RDY and (not _WindfuryTotem_BUFF) and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_SingleButton:IsVisible()) and ConRO_FullButton:IsVisible() then
-				_WindfuryTotem_BUFF = true;
-				tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
 			end
 
 			if _PrimordialWave_RDY and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
@@ -844,23 +817,8 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 				_FlameShock_RDY = false;
 			end
 
-			if _WindfuryTotem_RDY and _WindfuryTotem_DUR <= 60 and ConRO_FullButton:IsVisible() then
-				_WindfuryTotem_BUFF = true;
-				_WindfuryTotem_DUR = 120;
-				tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
-			end
 		else
 			if not _in_combat then
-				if _TotemicProjection_RDY and not _WindfuryTotem_BUFF and _WindfuryTotem_DUR > 30 then
-					_TotemicProjection_RDY = false;
-					tinsert(ConRO.SuggestedSpells, _TotemicProjection);
-				end
-
-				if _WindfuryTotem_RDY and not _WindfuryTotem_BUFF and ConRO_FullButton:IsVisible() then
-					_WindfuryTotem_BUFF = true;
-					tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
-				end
-
 				if _PrimordialWave_RDY and not _FlameShock_DEBUFF and ConRO:FullMode(_PrimordialWave) then
 					_PrimordialWave_RDY = false;
 					_FlameShock_DEBUFF = true;
@@ -917,11 +875,6 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 				tinsert(ConRO.SuggestedSpells, _ChainLightning);
 			end
 
-			if _WindfuryTotem_RDY and (not _WindfuryTotem_BUFF) and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible()) and ConRO_FullButton:IsVisible() then
-				_WindfuryTotem_BUFF = true;
-				tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
-			end
-
 			if _LightningBolt_RDY and _PrimordialWave_BUFF and _MaelstromWeapon_COUNT >= 5 and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible()) then
 				_PrimordialWave_BUFF = false;
 				_MaelstromWeapon_COUNT = 0;
@@ -940,11 +893,6 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 			if _Stormstrike_RDY and tChosen[Ability.DeeplyRootedElements.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
 				_Stormstrike_RDY = false;
 				tinsert(ConRO.SuggestedSpells, _Stormstrike);
-			end
-
-			if _WindfuryTotem_RDY and (not _WindfuryTotem_BUFF) and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) and ConRO_FullButton:IsVisible() then
-				_WindfuryTotem_BUFF = true;
-				tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
 			end
 
 			if _Stormstrike_RDY and tChosen[Ability.Ascendance.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds < 2) or ConRO_SingleButton:IsVisible()) then
@@ -1041,12 +989,6 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 			if _FlameShock_RDY then
 				tinsert(ConRO.SuggestedSpells, _FlameShock);
 				_FlameShock_RDY = false;
-			end
-
-			if _WindfuryTotem_RDY and _WindfuryTotem_DUR <= 60 and ConRO_FullButton:IsVisible() then
-				_WindfuryTotem_BUFF = true;
-				_WindfuryTotem_DUR = 120;
-				tinsert(ConRO.SuggestedSpells, _WindfuryTotem);
 			end
 		end
 	end
