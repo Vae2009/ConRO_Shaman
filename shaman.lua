@@ -215,8 +215,7 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 	local _FrostShock, _FrostShock_RDY = ConRO:AbilityReady(Ability.FrostShock, timeShift);
 		local _FluxMelting_BUFF = ConRO:Aura(Buff.FluxMelting, timeShift);
 	local _Icefury, _Icefury_RDY = ConRO:AbilityReady(Ability.Icefury, timeShift);
-		local _ElectrifiedShocks_DEBUFF, _, _ElectrifiedShocks_DUR = ConRO:TargetAura(Debuff.ElectrifiedShocks, timeShift);
-		local _Icefury_BUFF, _Icefury_COUNT, _Icefury_DUR = ConRO:Aura(Buff.Icefury, timeShift);
+		local _Icefury_BUFF, _Icefury_COUNT = ConRO:Aura(Buff.Icefury, timeShift);
 	local _LavaBurst, _LavaBurst_RDY = ConRO:AbilityReady(Ability.LavaBurst, timeShift);
 		local _LavaBurst_CHARGES = ConRO:SpellCharges(_LavaBurst);
 		local _LavaSurge_BUFF = ConRO:Aura(Buff.LavaSurge, timeShift);
@@ -443,18 +442,6 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 			_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
 		end
 
-		if _Icefury_RDY and currentSpell ~= _Icefury and tChosen[Ability.ElectrifiedShocks.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 4) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _Icefury);
-			_Icefury_RDY = false;
-			_Maelstrom = _Maelstrom + _Icefury_Mael;
-		end
-
-		if _FrostShock_RDY and ((_Icefury_DUR < 6  and not _ElectrifiedShocks_DEBUFF) or (tChosen[Ability.SurgeofPower.talentID] and _Maelstrom >= _Maelstrom_COST and _ElectrifiedShocks_DUR < 3.5)) and _Icefury_COUNT >= 1 and not _SurgeofPower_BUFF and tChosen[Ability.ElectrifiedShocks.talentID] then
-			tinsert(ConRO.SuggestedSpells, _FrostShock);
-			_Icefury_COUNT = _Icefury_COUNT - 1;
-			_ElectrifiedShocks_Debuff = true;
-		end
-
 		if _ChainLightning_RDY and (ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 3) then
 			tinsert(ConRO.SuggestedSpells, _ChainLightning);
 		end
@@ -490,13 +477,6 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 		if _FrostShock_RDY and _Icefury_BUFF and _Icefury_COUNT >= 1 and (tChosen[Ability.FluxMelting.talentID] and not _FluxMelting_BUFF) then
 			tinsert(ConRO.SuggestedSpells, _FrostShock);
 			_Icefury_COUNT = _Icefury_COUNT - 1;
-			_ElectrifiedShocks_Debuff = true;
-		end
-
-		if _FrostShock_RDY and _Icefury_BUFF and _Icefury_COUNT >= 1 and (tChosen[Ability.ElectrifiedShocks.talentID] and not _ElectrifiedShocks_DEBUFF) and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 4) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _FrostShock);
-			_Icefury_COUNT = _Icefury_COUNT - 1;
-			_ElectrifiedShocks_Debuff = true;
 		end
 
 		if _Icefury_RDY and currentSpell ~= _Icefury and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds < 3) or ConRO_SingleButton:IsVisible()) then
