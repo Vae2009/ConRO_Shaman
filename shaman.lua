@@ -416,7 +416,7 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 			_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
 		end
 
-		if _LightningBolt_RDY and _Tempest_BUFF and currentSpell ~= _LightningBolt and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 1) or ConRO_SingleButton:IsVisible()) then
+		if _LightningBolt_RDY and _Tempest_BUFF and currentSpell ~= _LightningBolt then
 			tinsert(ConRO.SuggestedSpells, _LightningBolt);
 			_Tempest_BUFF = false;
 		end
@@ -426,7 +426,7 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 			_LiquidMagmaTotem_RDY = false;
 		end
 
-		if _FlameShock_RDY and (not _FlameShock_DEBUFF or _FlameShock_DUR < 12) and not _SurgeofPower_BUFF then
+		if _FlameShock_RDY and (not _FlameShock_DEBUFF or _FlameShock_DUR < 12) and not _SurgeofPower_BUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 1) or ConRO_SingleButton:IsVisible()) then
 			tinsert(ConRO.SuggestedSpells, _FlameShock);
 			_FlameShock_RDY = false;
 			_FlameShock_DEBUFF = true;
