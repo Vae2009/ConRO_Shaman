@@ -115,6 +115,7 @@ local _Mana, _Mana_Max, _Mana_Percent = ConRO:PlayerPower('Mana');
 local _Maelstrom, _Maelstrom_Max = ConRO:PlayerPower('Maelstrom');
 
 --Conditions
+local _Queue = 0;
 local _is_moving = ConRO:PlayerSpeed();
 local _enemies_in_melee, _target_in_melee = ConRO:Targets("Melee");
 local _enemies_in_10yrds, _target_in_10yrds = ConRO:Targets("10");
@@ -144,6 +145,7 @@ function ConRO:Stats()
 	_Mana, _Mana_Max, _Mana_Percent = ConRO:PlayerPower('Mana');
 	_Maelstrom, _Maelstrom_Max = ConRO:PlayerPower('Maelstrom');
 
+	_Queue = 0;
 	_is_moving = ConRO:PlayerSpeed();
 	_enemies_in_melee, _target_in_melee = ConRO:Targets("Melee");
 	_enemies_in_10yrds, _target_in_10yrds = ConRO:Targets("10");
@@ -577,8 +579,9 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	local _PrimordialWave, _PrimordialWave_RDY = ConRO:AbilityReady(Ability.PrimordialWave, timeShift);
 		local _PrimordialWave_BUFF = ConRO:Aura(Buff.PrimordialWave, timeShift);
 	local _Skyfury, _Skyfury_RDY = ConRO:AbilityReady(Ability.Skyfury, timeShift);
-		local _Skyfury_BUFF = ConRO:Aura(Buff.Skyfury, timeShift);	
+		local _Skyfury_BUFF = ConRO:Aura(Buff.Skyfury, timeShift);
 	local _Stormstrike, _Stormstrike_RDY = ConRO:AbilityReady(Ability.Stormstrike, timeShift);
+		local _Stormstrike_CHARGES, _Stormstrike_MCHARGES = 1, 1;
 		local _Stormbringer_BUFF = ConRO:Aura(Buff.Stormbringer, timeShift);
 	local _Sundering, _Sundering_RDY = ConRO:AbilityReady(Ability.Sundering, timeShift);
 	local _SurgingTotem, _SurgingTotem_RDY = ConRO:AbilityReady(Ability.SurgingTotem, timeShift);
@@ -591,6 +594,10 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 --Conditions
 	if tChosen[Ability.FlowingSpirits.talentID] then
 		_FeralSpirit_RDY = false;
+	end
+
+	if tChosen[Ability.Stormblast.talentID] then
+		_Stormstrike_CHARGES, _Stormstrike_MCHARGES = ConRO:SpellCharges(_Stormstrike);
 	end
 
 	if ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 3) or ConRO_AoEButton:IsVisible()) and not _Tempest_BUFF then
@@ -628,221 +635,325 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 --Warnings	
 
 --Rotations
-	for i = 1, 2, 1 do
-		if ConRO:HeroSpec(HeroSpec.Totemic) then
-			if _Sundering_RDY and _target_in_10yrds and _SurgingTotem_ACTIVE and _Ascendance_BUFF then
-				tinsert(ConRO.SuggestedSpells, _Sundering);
-				_Sundering_RDY = false;
+	repeat
+		while(true) do
+			if ConRO:HeroSpec(HeroSpec.Totemic) then
+				if _Sundering_RDY and _target_in_10yrds and _SurgingTotem_ACTIVE and _Ascendance_BUFF then
+					tinsert(ConRO.SuggestedSpells, _Sundering);
+					_Sundering_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _Stormstrike_RDY and _Ascendance_BUFF and _Stormstrike_CHARGES >= 1 then
+					tinsert(ConRO.SuggestedSpells, _Windstrike);
+					_Stormstrike_RDY = false;
+					_Stormstrike_CHARGES = _Stormstrike_CHARGES - 1;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FeralSpirit_RDY and ConRO:FullMode(_FeralSpirit) then
+					tinsert(ConRO.SuggestedSpells, _FeralSpirit);
+					_FeralSpirit_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _SurgingTotem_RDY then
+					tinsert(ConRO.SuggestedSpells, _SurgingTotem);
+					_SurgingTotem_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _Sundering_RDY and _target_in_10yrds and _SurgingTotem_ACTIVE then
+					tinsert(ConRO.SuggestedSpells, _Sundering);
+					_Sundering_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _PrimordialWave_RDY then
+					tinsert(ConRO.SuggestedSpells, _PrimordialWave);
+					_PrimordialWave_RDY = false;
+					_FlameShock_DEBUFF = true;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _DoomWinds_RDY and ConRO:FullMode(_DoomWinds) then
+					tinsert(ConRO.SuggestedSpells, _DoomWinds);
+					_DoomWinds_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _Ascendance_RDY and ConRO:FullMode(_Ascendance) then
+					tinsert(ConRO.SuggestedSpells, _Ascendance);
+					_Ascendance_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _LavaLash_RDY and _HotHand_BUFF then
+					tinsert(ConRO.SuggestedSpells, _LavaLash);
+					_LavaLash_RDY = false;
+					_HotHand_BUFF = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 8 and _PrimordialWave_BUFF then
+					tinsert(ConRO.SuggestedSpells, _LightningBolt);
+					_MaelstromWeapon_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _ElementalBlast_RDY and _MaelstromWeapon_COUNT >= 8 then
+					tinsert(ConRO.SuggestedSpells, _ElementalBlast);
+					_ElementalBlast_RDY = false;
+					_MaelstromWeapon_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 8 then
+					tinsert(ConRO.SuggestedSpells, _LightningBolt);
+					_MaelstromWeapon_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _Stormstrike_RDY and _Stormstrike_CHARGES >= 1 then
+					tinsert(ConRO.SuggestedSpells, _Stormstrike);
+					_Stormstrike_RDY = false;
+					_Stormstrike_CHARGES = _Stormstrike_CHARGES - 1;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FlameShock_RDY and _VoltaicBlaze_BUFF then
+					tinsert(ConRO.SuggestedSpells, _FlameShock);
+					_VoltaicBlaze_BUFF = false;
+					_FlameShock_DEBUFF = true;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _CrashLightning_RDY and _target_in_melee and not _CrashLightning_BUFF then
+					tinsert(ConRO.SuggestedSpells, _CrashLightning);
+					_CrashLightning_RDY = false;
+					_CrashLightning_BUFF = true;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 5 then
+					tinsert(ConRO.SuggestedSpells, _LightningBolt);
+					_MaelstromWeapon_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _IceStrike_RDY then
+					tinsert(ConRO.SuggestedSpells, _IceStrike);
+					_IceStrike_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FrostShock_RDY and (_IceStrike_BUFF or _Hailstorm_COUNT >= 5) then
+					tinsert(ConRO.SuggestedSpells, _FrostShock);
+					_FrostShock_RDY = false;
+					_IceStrike_BUFF = false;
+					_Hailstorm_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _LavaLash_RDY and _FlameShock_DEBUFF then
+					tinsert(ConRO.SuggestedSpells, _LavaLash);
+					_LavaLash_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FireNova_RDY and _FlameShock_DEBUFF then
+					tinsert(ConRO.SuggestedSpells, _FireNova);
+					_FireNova_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FlameShock_RDY and not _FlameShock_DEBUFF then
+					tinsert(ConRO.SuggestedSpells, _FlameShock);
+					_FlameShock_RDY = false;
+					_FlameShock_DEBUFF = true;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FrostShock_RDY then
+					tinsert(ConRO.SuggestedSpells, _FrostShock);
+					_FrostShock_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+			else
+				if _FeralSpirit_RDY and ConRO:FullMode(_FeralSpirit) then
+					tinsert(ConRO.SuggestedSpells, _FeralSpirit);
+					_FeralSpirit_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _LightningBolt_RDY and _Tempest_BUFF and _MaelstromWeapon_COUNT >= 10 then
+					tinsert(ConRO.SuggestedSpells, _LightningBolt);
+					_Tempest_BUFF = false;
+					_MaelstromWeapon_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _Stormstrike_RDY and _Ascendance_BUFF and _Stormstrike_CHARGES >= 1 then
+					tinsert(ConRO.SuggestedSpells, _Windstrike);
+					_Stormstrike_RDY = false;
+					_Stormstrike_CHARGES = _Stormstrike_CHARGES - 1;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _PrimordialWave_RDY then
+					tinsert(ConRO.SuggestedSpells, _PrimordialWave);
+					_PrimordialWave_RDY = false;
+					_FlameShock_DEBUFF = true;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _Ascendance_RDY and ConRO:FullMode(_Ascendance) then
+					tinsert(ConRO.SuggestedSpells, _Ascendance);
+					_Ascendance_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _LightningBolt_RDY and _Tempest_BUFF and _MaelstromWeapon_COUNT >= 5 then
+					tinsert(ConRO.SuggestedSpells, _LightningBolt);
+					_Tempest_BUFF = false;
+					_MaelstromWeapon_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _ElementalBlast_RDY and _MaelstromWeapon_COUNT >= 5 then
+					tinsert(ConRO.SuggestedSpells, _ElementalBlast);
+					_ElementalBlast_RDY = false;
+					_MaelstromWeapon_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 5 then
+					tinsert(ConRO.SuggestedSpells, _LightningBolt);
+					_MaelstromWeapon_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _LavaLash_RDY and _HotHand_BUFF then
+					tinsert(ConRO.SuggestedSpells, _LavaLash);
+					_LavaLash_RDY = false;
+					_HotHand_BUFF = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _DoomWinds_RDY and ConRO:FullMode(_DoomWinds) then
+					tinsert(ConRO.SuggestedSpells, _DoomWinds);
+					_DoomWinds_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _Stormstrike_RDY and _Stormstrike_CHARGES >= 1 then
+					tinsert(ConRO.SuggestedSpells, _Stormstrike);
+					_Stormstrike_RDY = false;
+					_Stormstrike_CHARGES = _Stormstrike_CHARGES - 1;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FlameShock_RDY and _VoltaicBlaze_BUFF then
+					tinsert(ConRO.SuggestedSpells, _FlameShock);
+					_VoltaicBlaze_BUFF = false;
+					_FlameShock_DEBUFF = true;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _IceStrike_RDY then
+					tinsert(ConRO.SuggestedSpells, _IceStrike);
+					_IceStrike_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FrostShock_RDY and (_IceStrike_BUFF or _Hailstorm_COUNT >= 5) then
+					tinsert(ConRO.SuggestedSpells, _FrostShock);
+					_FrostShock_RDY = false;
+					_IceStrike_BUFF = false;
+					_Hailstorm_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FlameShock_RDY and not _FlameShock_DEBUFF then
+					tinsert(ConRO.SuggestedSpells, _FlameShock);
+					_FlameShock_RDY = false;
+					_FlameShock_DEBUFF = true;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _LavaLash_RDY and _FlameShock_DEBUFF then
+					tinsert(ConRO.SuggestedSpells, _LavaLash);
+					_LavaLash_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _Sundering_RDY and _target_in_10yrds then
+					tinsert(ConRO.SuggestedSpells, _Sundering);
+					_Sundering_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FireNova_RDY and _FlameShock_DEBUFF then
+					tinsert(ConRO.SuggestedSpells, _FireNova);
+					_FireNova_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _CrashLightning_RDY and _target_in_melee and not _CrashLightning_BUFF then
+					tinsert(ConRO.SuggestedSpells, _CrashLightning);
+					_CrashLightning_RDY = false;
+					_CrashLightning_BUFF = true;
+					_Queue = _Queue + 1;
+					break;
+				end
 			end
 
-			if _Stormstrike_RDY and _Ascendance_BUFF then
-				tinsert(ConRO.SuggestedSpells, _Windstrike);
-				_Stormstrike_RDY = false;
-			end
-
-			if _FeralSpirit_RDY and ConRO:FullMode(_FeralSpirit) then
-				_FeralSpirit_RDY = false;
-				tinsert(ConRO.SuggestedSpells, _FeralSpirit);
-			end
-
-			if _SurgingTotem_RDY then
-				tinsert(ConRO.SuggestedSpells, _SurgingTotem);
-				_SurgingTotem_RDY = false;
-			end
-
-			if _Sundering_RDY and _target_in_10yrds and _SurgingTotem_ACTIVE then
-				tinsert(ConRO.SuggestedSpells, _Sundering);
-				_Sundering_RDY = false;
-			end
-
-			if _PrimordialWave_RDY then
-				tinsert(ConRO.SuggestedSpells, _PrimordialWave);
-				_PrimordialWave_RDY = false;
-			end
-
-			if _DoomWinds_RDY and ConRO:FullMode(_DoomWinds) then
-				tinsert(ConRO.SuggestedSpells, _DoomWinds);
-				_DoomWinds_RDY = false;
-			end
-
-			if _Ascendance_RDY and ConRO:FullMode(_Ascendance) then
-				tinsert(ConRO.SuggestedSpells, _Ascendance);
-				_Ascendance_RDY = false;
-			end
-
-			if _LavaLash_RDY and _HotHand_BUFF then
-				tinsert(ConRO.SuggestedSpells, _LavaLash);
-				_LavaLash_RDY = false;
-				_HotHand_BUFF = false;
-			end
-
-			if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 8 and _PrimordialWave_BUFF then
-				tinsert(ConRO.SuggestedSpells, _LightningBolt);
-				_MaelstromWeapon_COUNT = 0;
-			end
-
-			if _ElementalBlast_RDY and _MaelstromWeapon_COUNT >= 8 then
-				tinsert(ConRO.SuggestedSpells, _ElementalBlast);
-				_ElementalBlast_RDY = false;
-				_MaelstromWeapon_COUNT = 0;
-			end
-
-			if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 8 then
-				tinsert(ConRO.SuggestedSpells, _LightningBolt);
-				_MaelstromWeapon_COUNT = 0;
-			end
-
-			if _Stormstrike_RDY then
-				tinsert(ConRO.SuggestedSpells, _Stormstrike);
-				_Stormstrike_RDY = false;
-			end
-
-			if _FlameShock_RDY and _VoltaicBlaze_BUFF then
-				tinsert(ConRO.SuggestedSpells, _FlameShock);
-				_VoltaicBlaze_BUFF = true;
-			end
-
-			if _CrashLightning_RDY and _target_in_melee and not _CrashLightning_BUFF then
-				tinsert(ConRO.SuggestedSpells, _CrashLightning);
-				_CrashLightning_RDY = false;
-				_CrashLightning_BUFF = true;
-			end
-
-			if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 5 then
-				tinsert(ConRO.SuggestedSpells, _LightningBolt);
-				_MaelstromWeapon_COUNT = 0;
-			end
-
-			if _IceStrike_RDY then
-				tinsert(ConRO.SuggestedSpells, _IceStrike);
-				_IceStrike_RDY = false;
-			end
-
-			if _FrostShock_RDY and (_IceStrike_BUFF or _Hailstorm_COUNT >= 10) then
-				tinsert(ConRO.SuggestedSpells, _FrostShock);
-				_FrostShock_RDY = false;
-			end
-
-			if _LavaLash_RDY and _FlameShock_DEBUFF then
-				tinsert(ConRO.SuggestedSpells, _LavaLash);
-				_LavaLash_RDY = false;
-			end
-
-			if _FireNova_RDY and _FlameShock_DEBUFF then
-				_FireNova_RDY = false;
-				tinsert(ConRO.SuggestedSpells, _FireNova);
-			end
-
-			if _FlameShock_RDY and not _FlameShock_DEBUFF then
-				tinsert(ConRO.SuggestedSpells, _FlameShock);
-				_FlameShock_RDY = false;
-			end
-
-			if _FrostShock_RDY then
-				tinsert(ConRO.SuggestedSpells, _FrostShock);
-				_FrostShock_RDY = false;
-			end
-		else
-			if _FeralSpirit_RDY and ConRO:FullMode(_FeralSpirit) then
-				_FeralSpirit_RDY = false;
-				tinsert(ConRO.SuggestedSpells, _FeralSpirit);
-			end
-
-			if _LightningBolt_RDY and _Tempest_BUFF and _MaelstromWeapon_COUNT >= 10 then
-				tinsert(ConRO.SuggestedSpells, _LightningBolt);
-				_MaelstromWeapon_COUNT = 0;
-			end
-
-			if _Stormstrike_RDY and _Ascendance_BUFF then
-				tinsert(ConRO.SuggestedSpells, _Windstrike);
-				_Stormstrike_RDY = false;
-			end
-
-			if _PrimordialWave_RDY then
-				tinsert(ConRO.SuggestedSpells, _PrimordialWave);
-				_PrimordialWave_RDY = false;
-			end
-
-			if _Ascendance_RDY and ConRO:FullMode(_Ascendance) then
-				tinsert(ConRO.SuggestedSpells, _Ascendance);
-				_Ascendance_RDY = false;
-			end
-
-			if _LightningBolt_RDY and _Tempest_BUFF and _MaelstromWeapon_COUNT >= 5 then
-				tinsert(ConRO.SuggestedSpells, _LightningBolt);
-				_MaelstromWeapon_COUNT = 0;
-			end
-
-			if _ElementalBlast_RDY and _MaelstromWeapon_COUNT >= 5 then
-				tinsert(ConRO.SuggestedSpells, _ElementalBlast);
-				_ElementalBlast_RDY = false;
-				_MaelstromWeapon_COUNT = 0;
-			end
-
-			if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 5 then
-				tinsert(ConRO.SuggestedSpells, _LightningBolt);
-				_MaelstromWeapon_COUNT = 0;
-			end
-
-			if _LavaLash_RDY and _HotHand_BUFF then
-				tinsert(ConRO.SuggestedSpells, _LavaLash);
-				_LavaLash_RDY = false;
-				_HotHand_BUFF = false;
-			end
-
-			if _DoomWinds_RDY and ConRO:FullMode(_DoomWinds) then
-				tinsert(ConRO.SuggestedSpells, _DoomWinds);
-				_DoomWinds_RDY = false;
-			end
-
-			if _Stormstrike_RDY then
-				tinsert(ConRO.SuggestedSpells, _Stormstrike);
-				_Stormstrike_RDY = false;
-			end
-
-			if _FlameShock_RDY and _VoltaicBlaze_BUFF then
-				tinsert(ConRO.SuggestedSpells, _FlameShock);
-				_VoltaicBlaze_BUFF = true;
-			end
-
-			if _IceStrike_RDY then
-				tinsert(ConRO.SuggestedSpells, _IceStrike);
-				_IceStrike_RDY = false;
-			end
-
-			if _FrostShock_RDY and (_IceStrike_BUFF or _Hailstorm_COUNT >= 10) then
-				tinsert(ConRO.SuggestedSpells, _FrostShock);
-				_FrostShock_RDY = false;
-			end
-
-			if _FlameShock_RDY and not _FlameShock_DEBUFF then
-				tinsert(ConRO.SuggestedSpells, _FlameShock);
-				_FlameShock_RDY = false;
-			end
-
-			if _LavaLash_RDY and _FlameShock_DEBUFF then
-				tinsert(ConRO.SuggestedSpells, _LavaLash);
-				_LavaLash_RDY = false;
-			end
-
-			if _Sundering_RDY and _target_in_10yrds then
-				tinsert(ConRO.SuggestedSpells, _Sundering);
-				_Sundering_RDY = false;
-			end
-
-			if _FireNova_RDY and _FlameShock_DEBUFF then
-				_FireNova_RDY = false;
-				tinsert(ConRO.SuggestedSpells, _FireNova);
-			end
-
-			if _CrashLightning_RDY and _target_in_melee and not _CrashLightning_BUFF then
-				tinsert(ConRO.SuggestedSpells, _CrashLightning);
-				_CrashLightning_RDY = false;
-				_CrashLightning_BUFF = true;
-			end
+			tinsert(ConRO.SuggestedSpells, 289603); --Waiting Spell Icon
+			_Queue = _Queue + 3;
+			break;
 		end
-	end
-	return nil;
+	until _Queue >= 3;
+return nil;
 end
 
 function ConRO.Shaman.EnhancementDef(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
@@ -905,12 +1016,11 @@ function ConRO.Shaman.Restoration(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	local _WindShear, _WindShear_RDY = ConRO:AbilityReady(Ability.WindShear, timeShift);
 	local _LightningBolt, _LightningBolt_RDY = ConRO:AbilityReady(Ability.LightningBolt, timeShift);
 	local _ChainLightning, _ChainLightning_RDY = ConRO:AbilityReady(Ability.ChainLightning, timeShift);
-	local _EarthElemental, _EarthElemental_RDY, _EarthElemental_CD, _EarthElemental_MaxCD = ConRO:AbilityReady(Ability.EarthElemental, timeShift);
+	local _EarthElemental, _EarthElemental_RDY = ConRO:AbilityReady(Ability.EarthElemental, timeShift);
 	local _LavaBurst, _LavaBurst_RDY = ConRO:AbilityReady(Ability.LavaBurst, timeShift);
 		local _LavaBurst_CHARGES = ConRO:SpellCharges(_LavaBurst);
-		local _LavaSurge_BUFF = ConRO:Aura(Buff.LavaSurge, timeShift);
 	local _FlameShock, _FlameShock_RDY = ConRO:AbilityReady(Ability.FlameShock, timeShift);
-		local _FlameShock_DEBUFF = ConRO:TargetAura(Debuff.FlameShock, timeShift + 6);
+		local _FlameShock_DEBUFF = ConRO:TargetAura(Debuff.FlameShock, timeShift);
 	local _HealingRain, _HealingRain_RDY = ConRO:AbilityReady(Ability.HealingRain, timeShift);
 	local _HealingStreamTotem, _HealingStreamTotem_RDY = ConRO:AbilityReady(Ability.HealingStreamTotem, timeShift);
 	local _EarthShield, _EarthShield_RDY = ConRO:AbilityReady(Ability.EarthShield, timeShift);
@@ -920,13 +1030,16 @@ function ConRO.Shaman.Restoration(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	local _PrimordialWave, _PrimordialWave_RDY = ConRO:AbilityReady(Ability.PrimordialWave, timeShift);
 		local _PrimordialWave_BUFF = ConRO:Aura(Buff.PrimordialWave, timeShift);
 	local _Skyfury, _Skyfury_RDY = ConRO:AbilityReady(Ability.Skyfury, timeShift);
-		local _Skyfury_BUFF = ConRO:Aura(Buff.Skyfury, timeShift);
 	local _WaterShield, _WaterShield_RDY = ConRO:AbilityReady(Ability.WaterShield, timeShift);
 		local _WaterShield_BUFF = ConRO:Aura(Buff.WaterShield, timeShift);
 
 --Conditions
 	if currentSpell == _LavaBurst then
 		_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
+	end
+
+	if tChosen[Ability.SurgingTotem.talentID] then
+		_HealingRain, _HealingRain_RDY = ConRO:AbilityReady(Ability.SurgingTotem, timeShift);
 	end
 
 --Indicators
@@ -945,33 +1058,50 @@ function ConRO.Shaman.Restoration(_, timeShift, currentSpell, gcd, tChosen, pvpC
 
 --Rotations
 	if _is_Enemy then
-		for i = 1, 2, 1 do
-			if _HealingRain_RDY and tChosen[Ability.AcidRain.talentID] then
-				_HealingRain_RDY = false;
-				tinsert(ConRO.SuggestedSpells, _HealingRain);
-			end
+		repeat
+			while(true) do
+				if _HealingRain_RDY and tChosen[Ability.AcidRain.talentID] then
+					tinsert(ConRO.SuggestedSpells, _HealingRain);
+					_HealingRain_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
 
-			if _ChainLightning_RDY and ((ConRO_AutoButton:IsVisible() and _enemies_in_10yrds >= 2) or ConRO_AoEButton:IsVisible()) then
-				tinsert(ConRO.SuggestedSpells, _ChainLightning);
-			end
+				if (ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 2) or ConRO_AoEButton:IsVisible() then
+					if _ChainLightning_RDY then
+						tinsert(ConRO.SuggestedSpells, _ChainLightning);
+						_Queue = _Queue + 1;
+						break;
+					end
+				else
+					if _FlameShock_RDY and not _FlameShock_DEBUFF then
+						tinsert(ConRO.SuggestedSpells, _FlameShock);
+						_FlameShock_DEBUFF = true;
+						_Queue = _Queue + 1;
+						break;
+					end
 
-			if _FlameShock_RDY and not _FlameShock_DEBUFF then
-				_FlameShock_DEBUFF = true;
-				tinsert(ConRO.SuggestedSpells, _FlameShock);
-			end
+					if _LavaBurst_RDY and _LavaBurst_CHARGES >= 1 and _FlameShock_DEBUFF then
+						tinsert(ConRO.SuggestedSpells, _LavaBurst);
+						_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
+						_Queue = _Queue + 1;
+						break;
+					end
 
-			if _LavaBurst_RDY and (_LavaBurst_CHARGES >= 1 or _LavaSurge_BUFF) then
-				_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
-				_LavaSurge_BUFF = false;
-				tinsert(ConRO.SuggestedSpells, _LavaBurst);
-			end
+					if _LightningBolt_RDY then
+						tinsert(ConRO.SuggestedSpells, _LightningBolt);
+						_Queue = _Queue + 1;
+						break;
+					end
+				end
 
-			if _LightningBolt_RDY then
-				tinsert(ConRO.SuggestedSpells, _LightningBolt);
+				tinsert(ConRO.SuggestedSpells, 289603); --Waiting Spell Icon
+				_Queue = _Queue + 3;
+				break;
 			end
-		end
+		until _Queue >= 3;
 	end
-	return nil;
+return nil;
 end
 
 function ConRO.Shaman.RestorationDef(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)

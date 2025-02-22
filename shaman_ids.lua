@@ -584,6 +584,38 @@ local ConRO_Shaman, ids = ...;
 		HighTide = {spellID = 157154, talentID = 101925},
 		DeeplyRootedElements = {spellID = 378270, talentID = 101937},
 		Wellspring = {spellID = 197995, talentID = 127676},
+	--Hero
+	--Farseer
+		CalloftheAncestors = {spellID = 443450, talentID = 117485},
+		LatentWisdom = {spellID = 443449, talentID = 117459},
+		AncientFellowship = {spellID = 443423, talentID = 123632},
+		HeedMyCall = {spellID = 443444, talentID = 117481},
+		RoutineCommunication = {spellID = 443445, talentID = 123630},
+		ElementalReverb = {spellID = 443418, talentID = 117466},
+		OfferingfromBeyond = {spellID = 443451, talentID = 117484},
+		PrimordialCapacity = {spellID = 443448, talentID = 117457},
+		SpiritwalkersMomentum = {spellID = 443425, talentID = 117458},
+		NaturalHarmony = {spellID = 443442, talentID = 117455},
+		EarthenCommunion = {spellID = 443441, talentID = 123631},
+		MaelstromSupremacy = {spellID = 443447, talentID = 117480},
+		FinalCalling = {spellID = 443446, talentID = 117472},
+		AncestralSwiftness = {spellID = 443454, talentID = 117491},
+	--Totemic
+		SurgingTotem = {spellID = 444995, talentID = 117474},
+		TotemicRebound = {spellID = 445025, talentID = 117487},
+		AmplificationCore = {spellID = 445029, talentID = 117471},
+		Oversurge = {spellID = 445030, talentID = 125823},
+		LivelyTotems = {spellID = 445034, talentID = 117479},
+		OversizedTotems = {spellID = 445026, talentID = 117456},
+		SwiftRecall = {spellID = 445027, talentID = 125825},
+		WindBarrier = {spellID = 445031, talentID = 117488},
+		Reactivity = {spellID = 445035, talentID = 117469},
+		ImbuementMastery = {spellID = 445028, talentID = 117468},
+		PulseCapacitor = {spellID = 445032, talentID = 117463},
+		SupportiveImbuements = {spellID = 445033, talentID = 125824},
+		TotemicCoordination = {spellID = 445036, talentID = 117478},
+		Earthsurge = {spellID = 455590, talentID = 125822},
+		WhirlingElements = {spellID = 445024, talentID = 117476},
 	}
 	ids.Resto_Form = {
 
