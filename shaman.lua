@@ -4,6 +4,7 @@ end
 ConRO.Shaman.CheckPvPTalents = function()
 end
 local ConRO_Shaman, ids = ...;
+local Ability, Buff, Debuff, PvPTalent, PetAbility = _, _, _, _, _;
 
 function ConRO:EnableRotationModule(mode)
 	mode = mode or 0;
@@ -12,17 +13,21 @@ function ConRO:EnableRotationModule(mode)
 	if mode == 0 then
 		self.Description = "Shaman [No Specialization Under 10]";
 		self.NextSpell = ConRO.Shaman.Under10;
+		self.NextDef = ConRO.Shaman.Under10Def;
 		self.ToggleHealer();
 	end;
 	if mode == 1 then
 		self.Description = 'Shaman Module [Elemental - Caster]';
 		if ConRO.db.profile._Spec_1_Enabled then
+			Ability, Buff, Debuff, PvPTalent, PetAbility = ids.elemental.ability, ids.elemental.buff, ids.elemental.debuff, ids.elemental.pvp_talent, ids.elemental.pet_ability;
 			self.NextSpell = ConRO.Shaman.Elemental;
+			self.NextDef = ConRO.Shaman.ElementalDef;
 			self.ToggleDamage();
 			ConROWindow:SetAlpha(ConRO.db.profile.transparencyWindow);
 			ConRODefenseWindow:SetAlpha(ConRO.db.profile.transparencyWindow);
 		else
 			self.NextSpell = ConRO.Shaman.Disabled;
+			self.NextDef = ConRO.Shaman.Disabled;
 			self.ToggleHealer();
 			ConROWindow:SetAlpha(0);
 			ConRODefenseWindow:SetAlpha(0);
@@ -31,12 +36,15 @@ function ConRO:EnableRotationModule(mode)
 	if mode == 2 then
 		self.Description = 'Shaman Module [Enhancement - Melee]';
 		if ConRO.db.profile._Spec_2_Enabled then
+			Ability, Buff, Debuff, PvPTalent = ids.enhancement.ability, ids.enhancement.buff, ids.enhancement.debuff, ids.enhancement.pvp_talent;
 			self.NextSpell = ConRO.Shaman.Enhancement;
+			self.NextDef = ConRO.Shaman.EnhancementDef;
 			self.ToggleDamage();
 			ConROWindow:SetAlpha(ConRO.db.profile.transparencyWindow);
 			ConRODefenseWindow:SetAlpha(ConRO.db.profile.transparencyWindow);
 		else
 			self.NextSpell = ConRO.Shaman.Disabled;
+			self.NextDef = ConRO.Shaman.Disabled;
 			self.ToggleHealer();
 			ConROWindow:SetAlpha(0);
 			ConRODefenseWindow:SetAlpha(0);
@@ -45,13 +53,15 @@ function ConRO:EnableRotationModule(mode)
 	if mode == 3 then
 		self.Description = 'Shaman Module [Restoration - Healer]';
 		if ConRO.db.profile._Spec_3_Enabled then
+			Ability, Buff, Debuff, PvPTalent = ids.restoration.ability, ids.restoration.buff, ids.restoration.debuff, ids.restoration.pvp_talent;
 			self.NextSpell = ConRO.Shaman.Restoration;
-			self.ToggleDamage();
-			self.BlockBurst();
+			self.NextDef = ConRO.Shaman.RestorationDef;
+			self.ToggleHealer();
 			ConROWindow:SetAlpha(ConRO.db.profile.transparencyWindow);
 			ConRODefenseWindow:SetAlpha(ConRO.db.profile.transparencyWindow);
 		else
 			self.NextSpell = ConRO.Shaman.Disabled;
+			self.NextDef = ConRO.Shaman.Disabled;
 			self.ToggleHealer();
 			ConROWindow:SetAlpha(0);
 			ConRODefenseWindow:SetAlpha(0);
@@ -62,31 +72,7 @@ function ConRO:EnableRotationModule(mode)
 end
 
 function ConRO:EnableDefenseModule(mode)
-	mode = mode or 0;
-	if mode == 0 then
-		self.NextDef = ConRO.Shaman.Under10Def;
-	end;
-	if mode == 1 then
-		if ConRO.db.profile._Spec_1_Enabled then
-			self.NextDef = ConRO.Shaman.ElementalDef;
-		else
-			self.NextDef = ConRO.Shaman.Disabled;
-		end
-	end;
-	if mode == 2 then
-		if ConRO.db.profile._Spec_2_Enabled then
-			self.NextDef = ConRO.Shaman.EnhancementDef;
-		else
-			self.NextDef = ConRO.Shaman.Disabled;
-		end
-	end;
-	if mode == 3 then
-		if ConRO.db.profile._Spec_3_Enabled then
-			self.NextDef = ConRO.Shaman.RestorationDef;
-		else
-			self.NextDef = ConRO.Shaman.Disabled;
-		end
-	end;
+
 end
 
 function ConRO:UNIT_SPELLCAST_SUCCEEDED(event, unitID, lineID, spellID)
@@ -129,7 +115,7 @@ local _ArcanePulse, _ArcanePulse_RDY = _, _;
 local _Berserking, _Berserking_RDY = _, _;
 local _ArcaneTorrent, _ArcaneTorrent_RDY = _, _;
 
-local HeroSpec, Racial = ids.HeroSpec, ids.Racial;
+local HeroSpec, Racial = ids.hero_spec, ids.racial;
 
 function ConRO:Stats()
 	_Player_Level = UnitLevel("player");
@@ -159,43 +145,9 @@ function ConRO:Stats()
 	_ArcaneTorrent, _ArcaneTorrent_RDY = ConRO:AbilityReady(Racial.ArcaneTorrent, timeShift);
 end
 
-function ConRO.Shaman.Under10(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
-	wipe(ConRO.SuggestedSpells);
-	ConRO:Stats();
-	local Ability, Form, Buff, Debuff, PetAbility, PvPTalent = ids.Shaman_Ability, ids.Shaman_Form, ids.Shaman_Buff, ids.Shaman_Debuff, ids.Shaman_PetAbility, ids.Shaman_PvPTalent;
-
---Abilities
-
---Conditions
-
---Warnings
-
---Rotations	
-
-
-return nil;
-end
-
-function ConRO.Shaman.Under10Def(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
-	wipe(ConRO.SuggestedDefSpells);
-	ConRO:Stats();
-	local Ability, Form, Buff, Debuff, PetAbility, PvPTalent = ids.Shaman_Ability, ids.Shaman_Form, ids.Shaman_Buff, ids.Shaman_Debuff, ids.Shaman_PetAbility, ids.Shaman_PvPTalent;
-
---Abilities
-
---Conditions
-
---Warnings
-
---Rotations	
-
-return nil;
-end
-
 function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedSpells);
 	ConRO:Stats();
-	local Ability, Form, Buff, Debuff, PetAbility, PvPTalent = ids.Ele_Ability, ids.Ele_Form, ids.Ele_Buff, ids.Ele_Debuff, ids.Ele_PetAbility, ids.Ele_PvPTalent;
 
 --Abilities	
 	local _Ascendance, _Ascendance_RDY = ConRO:AbilityReady(Ability.Ascendance, timeShift);
@@ -234,9 +186,6 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 	local _Skyfury, _Skyfury_RDY = ConRO:AbilityReady(Ability.Skyfury, timeShift);
 		local _Skyfury_BUFF = ConRO:Aura(Buff.Skyfury, timeShift);
 	local _StormElemental, _StormElemental_RDY, _StormElemental_CD, _StormElemental_MaxCD = ConRO:AbilityReady(Ability.StormElemental, timeShift);
-		local _WindGust_BUFF, _WindGust_COUNT = ConRO:Form(Form.WindGust);
-		local _CallLightning, _CallLightning_RDY = ConRO:AbilityReady(PetAbility.CallLightning, timeShift, 'pet');
-		local _TempestPet, _TempestPet_RDY = ConRO:AbilityReady(PetAbility.Tempest, timeShift, 'pet');
 	local _Stormkeeper, _Stormkeeper_RDY = ConRO:AbilityReady(Ability.Stormkeeper, timeShift);
 		local _Stormkeeper_BUFF = ConRO:Aura(Buff.Stormkeeper, timeShift);
 		local _Stormkeeper_CHARGES = ConRO:SpellCharges(_Stormkeeper);
@@ -323,169 +272,212 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 	ConRO:AbilityRaidBuffs(_ThunderstrikeWard, _ThunderstrikeWard_RDY and (not _ThunderstrikeWard_BUFF or (not _in_combat and _ThunderstrikeWard_DUR < 600)));
 
 --Rotations	
-	for i = 1, 2, 1 do
-		if not _in_combat then
+	repeat
+		while(true) do
+			if not _in_combat then
+				if tChosen[Ability.StormElemental.talentID] then
+					if _StormElemental_RDY and ConRO:FullMode(_StormElemental, 150) then
+						tinsert(ConRO.SuggestedSpells, _StormElemental);
+						_StormElemental_RDY = false;
+						_Queue = _Queue + 1;
+						break;
+					end
+				else
+					if _FireElemental_RDY and ConRO:FullMode(_FireElemental, 150) then
+						tinsert(ConRO.SuggestedSpells, _FireElemental);
+						_FireElemental_RDY = false;
+						_Queue = _Queue + 1;
+						break;
+					end
+				end
+
+				if _Stormkeeper_RDY and currentSpell ~= _Stormkeeper and not _Stormkeeper_BUFF and not _Ascendance_BUFF and tChosen[Ability.SurgeofPower.talentID] and ConRO:FullMode(_Stormkeeper) then
+					tinsert(ConRO.SuggestedSpells, _Stormkeeper);
+					_Stormkeeper_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _LavaBurst_RDY and currentSpell ~= _LavaBurst then
+					tinsert(ConRO.SuggestedSpells, _LavaBurst);
+					_Maelstrom = _Maelstrom - _LavaBurst_COST;
+					_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FlameShock_RDY and not _FlameShock_DEBUFF then
+					tinsert(ConRO.SuggestedSpells, _FlameShock);
+					_FlameShock_RDY = false;
+					_FlameShock_DEBUFF = true;
+					_FlameShock_DUR = 18;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _PrimordialWave_RDY and not _FlameShock_DEBUFF then
+					tinsert(ConRO.SuggestedSpells, _PrimordialWave);
+					_PrimordialWave_RDY = false;
+					_FlameShock_DEBUFF = true;
+					_FlameShock_DUR = 18;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _Ascendance_RDY and ConRO:FullMode(_Ascendance) then
+					tinsert(ConRO.SuggestedSpells, _Ascendance);
+					_Ascendance_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+			end
+
 			if tChosen[Ability.StormElemental.talentID] then
 				if _StormElemental_RDY and ConRO:FullMode(_StormElemental, 150) then
 					tinsert(ConRO.SuggestedSpells, _StormElemental);
+					_StormElemental_RDY = false;
+					_Queue = _Queue + 1;
+					break;
 				end
 			else
 				if _FireElemental_RDY and ConRO:FullMode(_FireElemental, 150) then
 					tinsert(ConRO.SuggestedSpells, _FireElemental);
+					_FireElemental_RDY = false;
+					_Queue = _Queue + 1;
+					break;
 				end
 			end
 
-			if _Stormkeeper_RDY and currentSpell ~= _Stormkeeper and not _Stormkeeper_BUFF and not _Ascendance_BUFF and tChosen[Ability.SurgeofPower.talentID] and ConRO:FullMode(_Stormkeeper) then
-				tinsert(ConRO.SuggestedSpells, _Stormkeeper);
-				_Stormkeeper_RDY = false;
+			if _LiquidMagmaTotem_RDY and not _LiquidMagmaTotem_DOWN and (not _FlameShock_DEBUFF or _FlameShock_DUR < 3) and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 3) or ConRO_AoEButton:IsVisible()) then
+				tinsert(ConRO.SuggestedSpells, _LiquidMagmaTotem);
+				_LiquidMagmaTotem_RDY = false;
+				_Queue = _Queue + 1;
+				break;
 			end
 
-			if _PrimordialWave_RDY and not _FlameShock_DEBUFF then
+			if _Stormkeeper_RDY and currentSpell ~= _Stormkeeper and not _Stormkeeper_BUFF and not _Ascendance_BUFF and ConRO:FullMode(_Stormkeeper) then
+				tinsert(ConRO.SuggestedSpells, _Stormkeeper);
+				_Stormkeeper_RDY = false;
+				_Queue = _Queue + 1;
+				break;
+			end
+
+			if _FlameShock_RDY and (not _FlameShock_DEBUFF or _FlameShock_DUR < 3) and not _SurgeofPower_BUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 1) or ConRO_SingleButton:IsVisible()) then
+				tinsert(ConRO.SuggestedSpells, _FlameShock);
+				_FlameShock_RDY = false;
+				_FlameShock_DEBUFF = true;
+				_FlameShock_DUR = 18;
+				_Queue = _Queue + 1;
+				break;
+			end
+
+			if _PrimordialWave_RDY then
 				tinsert(ConRO.SuggestedSpells, _PrimordialWave);
 				_PrimordialWave_RDY = false;
 				_FlameShock_DEBUFF = true;
 				_FlameShock_DUR = 18;
-			end
-
-			if _LiquidMagmaTotem_RDY and not _LiquidMagmaTotem_DOWN and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 2) or ConRO_AoEButton:IsVisible()) and ConRO:FullMode(_LiquidMagmaTotem) then
-				tinsert(ConRO.SuggestedSpells, _LiquidMagmaTotem);
-				_LiquidMagmaTotem_RDY = false;
+				_Queue = _Queue + 1;
+				break;
 			end
 
 			if _Ascendance_RDY and ConRO:FullMode(_Ascendance) then
 				tinsert(ConRO.SuggestedSpells, _Ascendance);
 				_Ascendance_RDY = false;
+				_Queue = _Queue + 1;
+				break;
 			end
 
-			if _LavaBurst_RDY and currentSpell ~= _LavaBurst then
-				tinsert(ConRO.SuggestedSpells, _LavaBurst);
-				_LavaSurge_BUFF = false;
-				_Maelstrom = _Maelstrom - _LavaBurst_COST;
-				_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
+			if _NaturesSwiftness_RDY then
+				tinsert(ConRO.SuggestedSpells, _NaturesSwiftness);
+				_NaturesSwiftness_RDY = false;
+				_Queue = _Queue + 1;
+				break;
 			end
 
-			if _FlameShock_RDY and not _FlameShock_DEBUFF then
-				tinsert(ConRO.SuggestedSpells, _FlameShock);
-				_FlameShock_RDY = false;
-				_FlameShock_DEBUFF = true;
-				_FlameShock_DUR = 18;
-			end
-		end
-
-		if tChosen[Ability.StormElemental.talentID] then
-			if _StormElemental_RDY and ConRO:FullMode(_StormElemental, 150) then
-				tinsert(ConRO.SuggestedSpells, _StormElemental);
-				_StormElemental_RDY = false;
-			end
-		else
-			if _FireElemental_RDY and ConRO:FullMode(_FireElemental, 150) then
-				tinsert(ConRO.SuggestedSpells, _FireElemental);
-				_FireElemental_RDY = false;
-			end
-		end
-
-		if _LiquidMagmaTotem_RDY and not _LiquidMagmaTotem_DOWN and (not _FlameShock_DEBUFF or _FlameShock_DUR < 12) and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 3) or ConRO_AoEButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _LiquidMagmaTotem);
-			_LiquidMagmaTotem_RDY = false;
-		end
-
-		if _Stormkeeper_RDY and currentSpell ~= _Stormkeeper and not _Stormkeeper_BUFF and not _Ascendance_BUFF and ConRO:FullMode(_Stormkeeper) then
-			tinsert(ConRO.SuggestedSpells, _Stormkeeper);
-			_Stormkeeper_RDY = false;
-		end
-
-		if _PrimordialWave_RDY then
-			tinsert(ConRO.SuggestedSpells, _PrimordialWave);
-			_PrimordialWave_RDY = false;
-			_FlameShock_DEBUFF = true;
-			_FlameShock_DUR = 18;
-		end
-
-		if _Ascendance_RDY and ConRO:FullMode(_Ascendance) then
-			tinsert(ConRO.SuggestedSpells, _Ascendance);
-			_Ascendance_RDY = false;
-		end
-
-		if _NaturesSwiftness_RDY then
-			tinsert(ConRO.SuggestedSpells, _NaturesSwiftness);
-			_NaturesSwiftness_RDY = false;
-		end
-
-		if _LavaBurst_RDY and currentSpell ~= _LavaBurst and _PrimordialWave_BUFF then
-			tinsert(ConRO.SuggestedSpells, _LavaBurst);
-			_LavaSurge_BUFF = false;
-			_Maelstrom = _Maelstrom - _LavaBurst_COST;
-			_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
-		end
-
-		if _LightningBolt_RDY and _Tempest_BUFF and currentSpell ~= _LightningBolt then
-			tinsert(ConRO.SuggestedSpells, _LightningBolt);
-			_Tempest_BUFF = false;
-		end
-
-		if _LiquidMagmaTotem_RDY and not _LiquidMagmaTotem_DOWN and (not _FlameShock_DEBUFF or _FlameShock_DUR < 12) then
-			tinsert(ConRO.SuggestedSpells, _LiquidMagmaTotem);
-			_LiquidMagmaTotem_RDY = false;
-		end
-
-		if _FlameShock_RDY and (not _FlameShock_DEBUFF or _FlameShock_DUR < 12) and not _SurgeofPower_BUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 1) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _FlameShock);
-			_FlameShock_RDY = false;
-			_FlameShock_DEBUFF = true;
-			_FlameShock_DUR = 18;
-		end
-
-		if _Earthquake_RDY and _EchoesofGreatSundering_BUFF then
-			tinsert(ConRO.SuggestedSpells, _Earthquake);
-			_Maelstrom = _Maelstrom + _Earthquake_COST;
-			_EchoesofGreatSundering_BUFF = false;
-		end
-
-		if _EarthShock_RDY and currentSpell ~= _EarthShock and (_Maelstrom >= _Maelstrom_Max - 20) then
-			tinsert(ConRO.SuggestedSpells, _EarthShock);
-			_Maelstrom = _Maelstrom - _EarthShock_COST;
-		end
-
-		if _FrostShock_RDY and _Icefury_BUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 2) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _FrostShock);
-			_Icefury_BUFF = false;
-		end
-
-		if _LavaBurst_RDY and _LavaBurst_CHARGES >= 1 and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 1) or ConRO_SingleButton:IsVisible()) then
-			tinsert(ConRO.SuggestedSpells, _LavaBurst);
-			_Maelstrom = _Maelstrom + _LavaBurst_COST;
-			_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
-			_LavaSurge_BUFF = false;
-		end
-
-		if _EarthShock_RDY and currentSpell ~= _EarthShock then
-			tinsert(ConRO.SuggestedSpells, _EarthShock);
-			_Maelstrom = _Maelstrom - _EarthShock_COST;
-		end
-
-		if ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 1) or ConRO_SingleButton:IsVisible()) then
-			if _LightningBolt_RDY then
+			if _LightningBolt_RDY and _Tempest_BUFF and currentSpell ~= _LightningBolt then
 				tinsert(ConRO.SuggestedSpells, _LightningBolt);
-				_Maelstrom = _Maelstrom + _LightningBolt_COST;
+				_Tempest_BUFF = false;
+				_Queue = _Queue + 1;
+				break;
 			end
-		else
-			if _ChainLightning_RDY then
-				tinsert(ConRO.SuggestedSpells, _ChainLightning);
-				_Maelstrom = _Maelstrom + 4;
-			end
-		end
 
-		if _FrostShock_RDY and _is_moving then
-			tinsert(ConRO.SuggestedSpells, _FrostShock);
+			if _LiquidMagmaTotem_RDY and not _LiquidMagmaTotem_DOWN and (not _FlameShock_DEBUFF or _FlameShock_DUR < 3) then
+				tinsert(ConRO.SuggestedSpells, _LiquidMagmaTotem);
+				_LiquidMagmaTotem_RDY = false;
+				_Queue = _Queue + 1;
+				break;
+			end
+
+			if _Earthquake_RDY and _EchoesofGreatSundering_BUFF and _Maelstrom >= _Earthquake_COST then
+				tinsert(ConRO.SuggestedSpells, _Earthquake);
+				_Maelstrom = _Maelstrom + _Earthquake_COST;
+				_EchoesofGreatSundering_BUFF = false;
+				_Queue = _Queue + 1;
+				break;
+			end
+
+			if _EarthShock_RDY and currentSpell ~= _EarthShock and (_Maelstrom >= _Maelstrom_Max - 20) then
+				tinsert(ConRO.SuggestedSpells, _EarthShock);
+				_Maelstrom = _Maelstrom - _EarthShock_COST;
+				_Queue = _Queue + 1;
+				break;
+			end
+
+			if _FrostShock_RDY and _Icefury_BUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 2) or ConRO_SingleButton:IsVisible()) then
+				tinsert(ConRO.SuggestedSpells, _FrostShock);
+				_Icefury_BUFF = false;
+				_Queue = _Queue + 1;
+				break;
+			end
+
+			if _LavaBurst_RDY and _LavaBurst_CHARGES >= 1 and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 1) or ConRO_SingleButton:IsVisible()) then
+				tinsert(ConRO.SuggestedSpells, _LavaBurst);
+				_Maelstrom = _Maelstrom + _LavaBurst_COST;
+				_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
+				_Queue = _Queue + 1;
+				break;
+			end
+
+			if _EarthShock_RDY and currentSpell ~= _EarthShock and _Maelstrom >= _EarthShock_COST then
+				tinsert(ConRO.SuggestedSpells, _EarthShock);
+				_Maelstrom = _Maelstrom - _EarthShock_COST;
+				_Queue = _Queue + 1;
+				break;
+			end
+
+			if ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 1) or ConRO_SingleButton:IsVisible()) then
+				if _LightningBolt_RDY then
+					tinsert(ConRO.SuggestedSpells, _LightningBolt);
+					_Maelstrom = _Maelstrom + _LightningBolt_COST;
+					_Queue = _Queue + 1;
+					break;
+				end
+			else
+				if _ChainLightning_RDY then
+					tinsert(ConRO.SuggestedSpells, _ChainLightning);
+					_Maelstrom = _Maelstrom + 4;
+					_Queue = _Queue + 1;
+					break;
+				end
+			end
+
+			if _FrostShock_RDY and _is_moving then
+				tinsert(ConRO.SuggestedSpells, _FrostShock);
+				_Queue = _Queue + 1;
+				break;
+			end
+
+			tinsert(ConRO.SuggestedSpells, 289603); --Waiting Spell Icon
+			_Queue = _Queue + 3;
+			break;
 		end
-	end
+	until _Queue >= 3;
 	return nil;
 end
 
 function ConRO.Shaman.ElementalDef(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedDefSpells);
 	ConRO:Stats();
-	local Ability, Form, Buff, Debuff, PetAbility, PvPTalent = ids.Ele_Ability, ids.Ele_Form, ids.Ele_Buff, ids.Ele_Debuff, ids.Ele_PetAbility, ids.Ele_PvPTalent;
 
 --Abilities
 	local _AstralShift, _AstralShift_RDY = ConRO:AbilityReady(Ability.AstralShift, timeShift);
@@ -532,7 +524,6 @@ end
 function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedSpells);
 	ConRO:Stats();
-	local Ability, Form, Buff, Debuff, PetAbility, PvPTalent = ids.Enh_Ability, ids.Enh_Form, ids.Enh_Buff, ids.Enh_Debuff, ids.Enh_PetAbility, ids.Enh_PvPTalent;
 
 --Abilities
 	local _Ascendance, _Ascendance_RDY = ConRO:AbilityReady(Ability.Ascendance, timeShift);
@@ -544,7 +535,6 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	local _DoomWinds, _DoomWinds_RDY = ConRO:AbilityReady(Ability.DoomWinds, timeShift);
 		local _DoomWinds_BUFF = ConRO:Aura(Buff.DoomWinds, timeShift);
 	local _EarthShield, _EarthShield_RDY = ConRO:AbilityReady(Ability.EarthShield, timeShift);
-		local _EarthShield_BUFF	= ConRO:Aura(Buff.EarthShield, timeShift);
 	local _ElementalBlast, _ElementalBlast_RDY = ConRO:AbilityReady(Ability.ElementalBlast, timeShift);
 		local _ElementalBlast_CHARGES, _ElementalBlast_MCHARGES = ConRO:SpellCharges(_ElementalBlast);
 	local _FeralSpirit, _FeralSpirit_RDY, _FeralSpirit_CD = ConRO:AbilityReady(Ability.FeralSpirit, timeShift);
@@ -576,6 +566,8 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 		local _LightningShield_BUFF = ConRO:Aura(Buff.LightningShield, timeShift);
 	local _Purge, _Purge_RDY = ConRO:AbilityReady(Ability.Purge, timeShift);
 	local _PrimalStrike, _PrimalStrike_RDY = ConRO:AbilityReady(Ability.PrimalStrike, timeShift);
+	local _PrimordialStorm, _PrimordialStorm_RDY = ConRO:AbilityReady(Ability.PrimordialStorm, timeShift);
+		local _PrimordialStorm_BUFF = ConRO:Aura(Buff.PrimordialStorm, timeShift);
 	local _PrimordialWave, _PrimordialWave_RDY = ConRO:AbilityReady(Ability.PrimordialWave, timeShift);
 		local _PrimordialWave_BUFF = ConRO:Aura(Buff.PrimordialWave, timeShift);
 	local _Skyfury, _Skyfury_RDY = ConRO:AbilityReady(Ability.Skyfury, timeShift);
@@ -590,6 +582,9 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	local _WindShear, _WindShear_RDY = ConRO:AbilityReady(Ability.WindShear, timeShift);
 	local _WindfuryWeapon, _WindfuryWeapon_RDY = ConRO:AbilityReady(Ability.WindfuryWeapon, timeShift);
 		local _WindfuryWeapon_BUFF, _, _WindfuryWeapon_DUR = ConRO:UnitAura(Buff.WindfuryWeapon, timeShift, _, _, "Weapon");
+
+--Auras
+	local electrostatic_wager_buff = ConRO:Aura(Buff.electrostatic_wager, timeShift);
 
 --Conditions
 	if tChosen[Ability.FlowingSpirits.talentID] then
@@ -638,28 +633,6 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	repeat
 		while(true) do
 			if ConRO:HeroSpec(HeroSpec.Totemic) then
-				if _Sundering_RDY and _target_in_10yrds and _SurgingTotem_ACTIVE and _Ascendance_BUFF then
-					tinsert(ConRO.SuggestedSpells, _Sundering);
-					_Sundering_RDY = false;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _Stormstrike_RDY and _Ascendance_BUFF and _Stormstrike_CHARGES >= 1 then
-					tinsert(ConRO.SuggestedSpells, _Windstrike);
-					_Stormstrike_RDY = false;
-					_Stormstrike_CHARGES = _Stormstrike_CHARGES - 1;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _FeralSpirit_RDY and ConRO:FullMode(_FeralSpirit) then
-					tinsert(ConRO.SuggestedSpells, _FeralSpirit);
-					_FeralSpirit_RDY = false;
-					_Queue = _Queue + 1;
-					break;
-				end
-
 				if _SurgingTotem_RDY then
 					tinsert(ConRO.SuggestedSpells, _SurgingTotem);
 					_SurgingTotem_RDY = false;
@@ -667,9 +640,17 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 					break;
 				end
 
-				if _Sundering_RDY and _target_in_10yrds and _SurgingTotem_ACTIVE then
-					tinsert(ConRO.SuggestedSpells, _Sundering);
-					_Sundering_RDY = false;
+				if _FeralSpirit_RDY and ConRO:FullMode(_FeralSpirit) then
+					tinsert(ConRO.SuggestedSpells, _FeralSpirit);
+					_FeralSpirit_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FlameShock_RDY and not _FlameShock_DEBUFF then
+					tinsert(ConRO.SuggestedSpells, _FlameShock);
+					_FlameShock_RDY = false;
+					_FlameShock_DEBUFF = true;
 					_Queue = _Queue + 1;
 					break;
 				end
@@ -689,130 +670,14 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 					break;
 				end
 
-				if _Ascendance_RDY and ConRO:FullMode(_Ascendance) then
-					tinsert(ConRO.SuggestedSpells, _Ascendance);
-					_Ascendance_RDY = false;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _LavaLash_RDY and _HotHand_BUFF then
-					tinsert(ConRO.SuggestedSpells, _LavaLash);
-					_LavaLash_RDY = false;
-					_HotHand_BUFF = false;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 8 and _PrimordialWave_BUFF then
-					tinsert(ConRO.SuggestedSpells, _LightningBolt);
-					_MaelstromWeapon_COUNT = 0;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _ElementalBlast_RDY and _MaelstromWeapon_COUNT >= 8 then
-					tinsert(ConRO.SuggestedSpells, _ElementalBlast);
-					_ElementalBlast_RDY = false;
-					_MaelstromWeapon_COUNT = 0;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 8 then
-					tinsert(ConRO.SuggestedSpells, _LightningBolt);
-					_MaelstromWeapon_COUNT = 0;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _Stormstrike_RDY and _Stormstrike_CHARGES >= 1 then
-					tinsert(ConRO.SuggestedSpells, _Stormstrike);
-					_Stormstrike_RDY = false;
-					_Stormstrike_CHARGES = _Stormstrike_CHARGES - 1;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _FlameShock_RDY and _VoltaicBlaze_BUFF then
-					tinsert(ConRO.SuggestedSpells, _FlameShock);
-					_VoltaicBlaze_BUFF = false;
-					_FlameShock_DEBUFF = true;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _CrashLightning_RDY and _target_in_melee and not _CrashLightning_BUFF then
-					tinsert(ConRO.SuggestedSpells, _CrashLightning);
-					_CrashLightning_RDY = false;
-					_CrashLightning_BUFF = true;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 5 then
-					tinsert(ConRO.SuggestedSpells, _LightningBolt);
-					_MaelstromWeapon_COUNT = 0;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _IceStrike_RDY then
-					tinsert(ConRO.SuggestedSpells, _IceStrike);
-					_IceStrike_RDY = false;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _FrostShock_RDY and (_IceStrike_BUFF or _Hailstorm_COUNT >= 5) then
-					tinsert(ConRO.SuggestedSpells, _FrostShock);
-					_FrostShock_RDY = false;
-					_IceStrike_BUFF = false;
-					_Hailstorm_COUNT = 0;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _LavaLash_RDY and _FlameShock_DEBUFF then
-					tinsert(ConRO.SuggestedSpells, _LavaLash);
-					_LavaLash_RDY = false;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _FireNova_RDY and _FlameShock_DEBUFF then
-					tinsert(ConRO.SuggestedSpells, _FireNova);
-					_FireNova_RDY = false;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _FlameShock_RDY and not _FlameShock_DEBUFF then
-					tinsert(ConRO.SuggestedSpells, _FlameShock);
-					_FlameShock_RDY = false;
-					_FlameShock_DEBUFF = true;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _FrostShock_RDY then
-					tinsert(ConRO.SuggestedSpells, _FrostShock);
-					_FrostShock_RDY = false;
-					_Queue = _Queue + 1;
-					break;
-				end
-			else
-				if _FeralSpirit_RDY and ConRO:FullMode(_FeralSpirit) then
-					tinsert(ConRO.SuggestedSpells, _FeralSpirit);
-					_FeralSpirit_RDY = false;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _LightningBolt_RDY and _Tempest_BUFF and _MaelstromWeapon_COUNT >= 10 then
-					tinsert(ConRO.SuggestedSpells, _LightningBolt);
-					_Tempest_BUFF = false;
-					_MaelstromWeapon_COUNT = 0;
+				if _PrimordialStorm_RDY and _MaelstromWeapon_COUNT >= 10 and _PrimordialStorm_BUFF then
+					tinsert(ConRO.SuggestedSpells, _PrimordialStorm);
+					_PrimordialStorm_RDY = false;
+					if tChosen[Ability.OverflowingMaelstrom.talentID] then
+						_MaelstromWeapon_COUNT = 0;
+					else
+						_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
+					end
 					_Queue = _Queue + 1;
 					break;
 				end
@@ -825,40 +690,9 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 					break;
 				end
 
-				if _PrimordialWave_RDY then
-					tinsert(ConRO.SuggestedSpells, _PrimordialWave);
-					_PrimordialWave_RDY = false;
-					_FlameShock_DEBUFF = true;
-					_Queue = _Queue + 1;
-					break;
-				end
-
 				if _Ascendance_RDY and ConRO:FullMode(_Ascendance) then
 					tinsert(ConRO.SuggestedSpells, _Ascendance);
 					_Ascendance_RDY = false;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _LightningBolt_RDY and _Tempest_BUFF and _MaelstromWeapon_COUNT >= 5 then
-					tinsert(ConRO.SuggestedSpells, _LightningBolt);
-					_Tempest_BUFF = false;
-					_MaelstromWeapon_COUNT = 0;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _ElementalBlast_RDY and _MaelstromWeapon_COUNT >= 5 then
-					tinsert(ConRO.SuggestedSpells, _ElementalBlast);
-					_ElementalBlast_RDY = false;
-					_MaelstromWeapon_COUNT = 0;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _LightningBolt_RDY and _MaelstromWeapon_COUNT >= 5 then
-					tinsert(ConRO.SuggestedSpells, _LightningBolt);
-					_MaelstromWeapon_COUNT = 0;
 					_Queue = _Queue + 1;
 					break;
 				end
@@ -867,60 +701,6 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 					tinsert(ConRO.SuggestedSpells, _LavaLash);
 					_LavaLash_RDY = false;
 					_HotHand_BUFF = false;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _DoomWinds_RDY and ConRO:FullMode(_DoomWinds) then
-					tinsert(ConRO.SuggestedSpells, _DoomWinds);
-					_DoomWinds_RDY = false;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _Stormstrike_RDY and _Stormstrike_CHARGES >= 1 then
-					tinsert(ConRO.SuggestedSpells, _Stormstrike);
-					_Stormstrike_RDY = false;
-					_Stormstrike_CHARGES = _Stormstrike_CHARGES - 1;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _FlameShock_RDY and _VoltaicBlaze_BUFF then
-					tinsert(ConRO.SuggestedSpells, _FlameShock);
-					_VoltaicBlaze_BUFF = false;
-					_FlameShock_DEBUFF = true;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _IceStrike_RDY then
-					tinsert(ConRO.SuggestedSpells, _IceStrike);
-					_IceStrike_RDY = false;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _FrostShock_RDY and (_IceStrike_BUFF or _Hailstorm_COUNT >= 5) then
-					tinsert(ConRO.SuggestedSpells, _FrostShock);
-					_FrostShock_RDY = false;
-					_IceStrike_BUFF = false;
-					_Hailstorm_COUNT = 0;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _FlameShock_RDY and not _FlameShock_DEBUFF then
-					tinsert(ConRO.SuggestedSpells, _FlameShock);
-					_FlameShock_RDY = false;
-					_FlameShock_DEBUFF = true;
-					_Queue = _Queue + 1;
-					break;
-				end
-
-				if _LavaLash_RDY and _FlameShock_DEBUFF then
-					tinsert(ConRO.SuggestedSpells, _LavaLash);
-					_LavaLash_RDY = false;
 					_Queue = _Queue + 1;
 					break;
 				end
@@ -932,9 +712,51 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 					break;
 				end
 
-				if _FireNova_RDY and _FlameShock_DEBUFF then
-					tinsert(ConRO.SuggestedSpells, _FireNova);
-					_FireNova_RDY = false;
+				if _MaelstromWeapon_COUNT >= 10 then
+					if _ElementalBlast_RDY then
+						tinsert(ConRO.SuggestedSpells, _ElementalBlast);
+						_ElementalBlast_RDY = false;
+						if tChosen[Ability.OverflowingMaelstrom.talentID] then
+							_MaelstromWeapon_COUNT = 0;
+						else
+							_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
+						end
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _LightningBolt_RDY then
+						tinsert(ConRO.SuggestedSpells, _LightningBolt);
+						_Tempest_BUFF = false;
+						if tChosen[Ability.OverflowingMaelstrom.talentID] then
+							_MaelstromWeapon_COUNT = 0;
+						else
+							_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
+						end
+						_Queue = _Queue + 1;
+						break;
+					end
+				end
+
+				if _LavaLash_RDY then
+					tinsert(ConRO.SuggestedSpells, _LavaLash);
+					_LavaLash_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _Stormstrike_RDY and _Stormstrike_CHARGES >= 1 then
+					tinsert(ConRO.SuggestedSpells, _Stormstrike);
+					_Stormstrike_RDY = false;
+					_Stormstrike_CHARGES = _Stormstrike_CHARGES - 1;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FlameShock_RDY and _VoltaicBlaze_BUFF then
+					tinsert(ConRO.SuggestedSpells, _FlameShock);
+					_VoltaicBlaze_BUFF = false;
+					_FlameShock_DEBUFF = true;
 					_Queue = _Queue + 1;
 					break;
 				end
@@ -946,20 +768,269 @@ function ConRO.Shaman.Enhancement(_, timeShift, currentSpell, gcd, tChosen, pvpC
 					_Queue = _Queue + 1;
 					break;
 				end
+
+				if _IceStrike_RDY then
+					tinsert(ConRO.SuggestedSpells, _IceStrike);
+					_IceStrike_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FrostShock_RDY and (_IceStrike_BUFF or _Hailstorm_COUNT >= 5) then
+					tinsert(ConRO.SuggestedSpells, _FrostShock);
+					_FrostShock_RDY = false;
+					_IceStrike_BUFF = false;
+					_Hailstorm_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FireNova_RDY and _FlameShock_DEBUFF then
+					tinsert(ConRO.SuggestedSpells, _FireNova);
+					_FireNova_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FrostShock_RDY then
+					tinsert(ConRO.SuggestedSpells, _FrostShock);
+					_FrostShock_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+			else
+				if _FlameShock_RDY and not _FlameShock_DEBUFF and tChosen[Ability.PrimordialWave.talentID] and _PrimordialWave_RDY then
+					tinsert(ConRO.SuggestedSpells, _FlameShock);
+					_FlameShock_RDY = false;
+					_FlameShock_DEBUFF = true;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _LavaLash_RDY and _FlameShock_DEBUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+					tinsert(ConRO.SuggestedSpells, _LavaLash);
+					_LavaLash_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _PrimordialWave_RDY then
+					tinsert(ConRO.SuggestedSpells, _PrimordialWave);
+					_PrimordialWave_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FeralSpirit_RDY and ConRO:FullMode(_FeralSpirit) then
+					tinsert(ConRO.SuggestedSpells, _FeralSpirit);
+					_FeralSpirit_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _DoomWinds_RDY and ConRO:FullMode(_DoomWinds) then
+					tinsert(ConRO.SuggestedSpells, _DoomWinds);
+					_DoomWinds_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _PrimordialStorm_RDY and _MaelstromWeapon_COUNT >= 10 and _PrimordialStorm_BUFF then
+					tinsert(ConRO.SuggestedSpells, _PrimordialStorm);
+					_PrimordialStorm_RDY = false;
+					if tChosen[Ability.OverflowingMaelstrom.talentID] then
+						_MaelstromWeapon_COUNT = 0;
+					else
+						_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
+					end
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _LightningBolt_RDY and _Tempest_BUFF and _MaelstromWeapon_COUNT >= 10 and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+					tinsert(ConRO.SuggestedSpells, _LightningBolt);
+					_Tempest_BUFF = false;
+					if tChosen[Ability.OverflowingMaelstrom.talentID] then
+						_MaelstromWeapon_COUNT = 0;
+					else
+						_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
+					end
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _CrashLightning_RDY and _target_in_melee and tChosen[Ability.ConvergingStorms.talentID] and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+					tinsert(ConRO.SuggestedSpells, _CrashLightning);
+					_CrashLightning_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _Stormstrike_RDY and _Ascendance_BUFF and _Stormstrike_CHARGES >= 1 then
+					tinsert(ConRO.SuggestedSpells, _Windstrike);
+					_Stormstrike_RDY = false;
+					_Stormstrike_CHARGES = _Stormstrike_CHARGES - 1;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _Ascendance_RDY and ConRO:FullMode(_Ascendance) then
+					tinsert(ConRO.SuggestedSpells, _Ascendance);
+					_Ascendance_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _CrashLightning_RDY and _target_in_melee and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+					tinsert(ConRO.SuggestedSpells, _CrashLightning);
+					_CrashLightning_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _MaelstromWeapon_COUNT >= 9 then
+					if _LightningBolt_RDY and _Tempest_BUFF then
+						tinsert(ConRO.SuggestedSpells, _LightningBolt);
+						_Tempest_BUFF = false;
+						if tChosen[Ability.OverflowingMaelstrom.talentID] then
+							_MaelstromWeapon_COUNT = 0;
+						else
+							_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
+						end
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _ElementalBlast_RDY then
+						tinsert(ConRO.SuggestedSpells, _ElementalBlast);
+						_ElementalBlast_RDY = false;
+						if tChosen[Ability.OverflowingMaelstrom.talentID] then
+							_MaelstromWeapon_COUNT = 0;
+						else
+							_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
+						end
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _LightningBolt_RDY then
+						tinsert(ConRO.SuggestedSpells, _LightningBolt);
+						_Tempest_BUFF = false;
+						if tChosen[Ability.OverflowingMaelstrom.talentID] then
+							_MaelstromWeapon_COUNT = 0;
+						else
+							_MaelstromWeapon_COUNT = _MaelstromWeapon_COUNT - 5;
+						end
+						_Queue = _Queue + 1;
+						break;
+					end
+				end
+
+				if _Stormstrike_RDY and _Stormstrike_CHARGES >= 2 then
+					tinsert(ConRO.SuggestedSpells, _Stormstrike);
+					_Stormstrike_RDY = false;
+					_Stormstrike_CHARGES = _Stormstrike_CHARGES - 1;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _CrashLightning_RDY and electrostatic_wager_buff and _target_in_melee and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 1) or ConRO_SingleButton:IsVisible()) then
+					tinsert(ConRO.SuggestedSpells, _CrashLightning);
+					_CrashLightning_RDY = false;
+					electrostatic_wager_buff = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _LavaLash_RDY and _HotHand_BUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds <= 1) or ConRO_SingleButton:IsVisible()) then
+					tinsert(ConRO.SuggestedSpells, _LavaLash);
+					_LavaLash_RDY = false;
+					_HotHand_BUFF = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FlameShock_RDY and _VoltaicBlaze_BUFF then
+					tinsert(ConRO.SuggestedSpells, _FlameShock);
+					_FlameShock_RDY = false;
+					_VoltaicBlaze_BUFF = false;
+					_FlameShock_DEBUFF = true;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _Stormstrike_RDY and _Stormstrike_CHARGES >= 1 then
+					tinsert(ConRO.SuggestedSpells, _Stormstrike);
+					_Stormstrike_RDY = false;
+					_Stormstrike_CHARGES = _Stormstrike_CHARGES - 1;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _IceStrike_RDY then
+					tinsert(ConRO.SuggestedSpells, _IceStrike);
+					_IceStrike_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _CrashLightning_RDY and _target_in_melee and tChosen[Ability.UnrelentingStorms.talentID] then
+					tinsert(ConRO.SuggestedSpells, _CrashLightning);
+					_CrashLightning_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _LavaLash_RDY then
+					tinsert(ConRO.SuggestedSpells, _LavaLash);
+					_LavaLash_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FrostShock_RDY and (_IceStrike_BUFF or _Hailstorm_COUNT >= 5) then
+					tinsert(ConRO.SuggestedSpells, _FrostShock);
+					_FrostShock_RDY = false;
+					_IceStrike_BUFF = false;
+					_Hailstorm_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _Sundering_RDY and _target_in_10yrds and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+					tinsert(ConRO.SuggestedSpells, _Sundering);
+					_Sundering_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FireNova_RDY and _FlameShock_DEBUFF and ((ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 2) or ConRO_AoEButton:IsVisible()) then
+					tinsert(ConRO.SuggestedSpells, _FireNova);
+					_FireNova_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FlameShock_RDY and not _FlameShock_DEBUFF then
+					tinsert(ConRO.SuggestedSpells, _FlameShock);
+					_FlameShock_RDY = false;
+					_FlameShock_DEBUFF = true;
+					_Queue = _Queue + 1;
+					break;
+				end
 			end
 
-			tinsert(ConRO.SuggestedSpells, 289603); --Waiting Spell Icon
+			tinsert(ConRO.SuggestedSpells, 6603); --Waiting Spell Icon
 			_Queue = _Queue + 3;
 			break;
 		end
 	until _Queue >= 3;
-return nil;
+	return nil;
 end
 
 function ConRO.Shaman.EnhancementDef(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedDefSpells);
 	ConRO:Stats();
-	local Ability, Form, Buff, Debuff, PetAbility, PvPTalent = ids.Enh_Ability, ids.Enh_Form, ids.Enh_Buff, ids.Enh_Debuff, ids.Enh_PetAbility, ids.Enh_PvPTalent;
 
 --Abilities	
 	local _AstralShift, _AstralShift_RDY = ConRO:AbilityReady(Ability.AstralShift, timeShift);
@@ -1007,7 +1078,6 @@ end
 function ConRO.Shaman.Restoration(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedSpells);
 	ConRO:Stats();
-	local Ability, Form, Buff, Debuff, PetAbility, PvPTalent = ids.Resto_Ability, ids.Resto_Form, ids.Resto_Buff, ids.Resto_Debuff, ids.Resto_PetAbility, ids.Resto_PvPTalent;
 
 --Abilities
 	local _EarthlivingWeapon, _EarthlivingWeapon_RDY = ConRO:AbilityReady(Ability.EarthlivingWeapon, timeShift);
@@ -1027,8 +1097,6 @@ function ConRO.Shaman.Restoration(_, timeShift, currentSpell, gcd, tChosen, pvpC
 		local _EarthShield_BUFF	= ConRO:Aura(Buff.EarthShield, timeShift);
 	local _LightningShield, _LightningShield_RDY = ConRO:AbilityReady(Ability.LightningShield, timeShift);
 		local _LightningShield_BUFF = ConRO:Aura(Buff.LightningShield, timeShift);
-	local _PrimordialWave, _PrimordialWave_RDY = ConRO:AbilityReady(Ability.PrimordialWave, timeShift);
-		local _PrimordialWave_BUFF = ConRO:Aura(Buff.PrimordialWave, timeShift);
 	local _Skyfury, _Skyfury_RDY = ConRO:AbilityReady(Ability.Skyfury, timeShift);
 	local _WaterShield, _WaterShield_RDY = ConRO:AbilityReady(Ability.WaterShield, timeShift);
 		local _WaterShield_BUFF = ConRO:Aura(Buff.WaterShield, timeShift);
@@ -1045,9 +1113,6 @@ function ConRO.Shaman.Restoration(_, timeShift, currentSpell, gcd, tChosen, pvpC
 --Indicators
 	ConRO:AbilityInterrupt(_WindShear, _WindShear_RDY and ConRO:Interrupt());
 	ConRO:AbilityPurge(_Purge, _Purge_RDY and ConRO:Purgable());
-
-	ConRO:AbilityBurst(_EarthElemental, _EarthElemental_RDY and _is_Enemy);
-	ConRO:AbilityBurst(_PrimordialWave, _PrimordialWave_RDY and not _PrimordialWave_BUFF and _is_Enemy);
 
 	ConRO:AbilityRaidBuffs(_Skyfury, _Skyfury_RDY and not ConRO:RaidBuff(Buff.Skyfury));
 
@@ -1067,7 +1132,7 @@ function ConRO.Shaman.Restoration(_, timeShift, currentSpell, gcd, tChosen, pvpC
 					break;
 				end
 
-				if (ConRO_AutoButton:IsVisible() and _enemies_in_40yrds >= 2) or ConRO_AoEButton:IsVisible() then
+				if _enemies_in_40yrds >= 2 then
 					if _ChainLightning_RDY then
 						tinsert(ConRO.SuggestedSpells, _ChainLightning);
 						_Queue = _Queue + 1;
@@ -1101,13 +1166,12 @@ function ConRO.Shaman.Restoration(_, timeShift, currentSpell, gcd, tChosen, pvpC
 			end
 		until _Queue >= 3;
 	end
-return nil;
+	return nil;
 end
 
 function ConRO.Shaman.RestorationDef(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedDefSpells);
 	ConRO:Stats();
-	local Ability, Form, Buff, Debuff, PetAbility, PvPTalent = ids.Resto_Ability, ids.Resto_Form, ids.Resto_Buff, ids.Resto_Debuff, ids.Resto_PetAbility, ids.Resto_PvPTalent;
 
 --Abilities	
 	local _AstralShift, _AstralShift_RDY = ConRO:AbilityReady(Ability.AstralShift, timeShift);

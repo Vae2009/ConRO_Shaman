@@ -1,24 +1,24 @@
 local ConRO_Shaman, ids = ...;
 
 --General
-	ids.Racial = {
-		AncestralCall = {spellID = 274738},
-		ArcanePulse = {spellID = 260364},
-		ArcaneTorrent = {spellID = 50613},
-		Berserking = {spellID = 26297},
-		Cannibalize = {spellID = 20577},
-		GiftoftheNaaru = {spellID = 59548},
-		Shadowmeld = {spellID = 58984},
-	}
-	ids.HeroSpec = {
-		Totemic = 54,
-		Stormbringer = 55,
-		Farseer = 56,
-	}
+ids.racial = {
+	AncestralCall = {spellID = 274738},
+	ArcanePulse = {spellID = 260364},
+	ArcaneTorrent = {spellID = 50613},
+	Berserking = {spellID = 26297},
+	Cannibalize = {spellID = 20577},
+	GiftoftheNaaru = {spellID = 59548},
+	Shadowmeld = {spellID = 58984},
+}
+ids.hero_spec = {
+	Totemic = 54,
+	Stormbringer = 55,
+	Farseer = 56,
+}
 
---Elemental
-	ids.Ele_Ability = {
-	--Shaman Baseline
+ids.elemental = {
+	ability = {
+	--Baseline
 		AncestralSpirit = {spellID = 2008},
 		AstralRecall = {spellID = 556},
 		Bloodlust = {spellID = 2825},
@@ -34,12 +34,10 @@ local ConRO_Shaman, ids = ...;
 		PrimalStrike = {spellID = 73899},
 		Skyfury = {spellID = 462854},
 		WaterWalking = {spellID = 546},
-		--Passive
-		Reincarnation = {spellID = 20608},
-	--Elemental Baseline
-		--Passive
+	--Passive
 		MasteryElementalOverload = {spellID = 168534},
-	--Shaman
+		Reincarnation = {spellID = 20608},
+	--Shaman Talents
 		ChainHeal = {spellID = 1064, talentID = 127861},
 		LavaBurst = {spellID = 51505, talentID = 127873},
 		AstralShift = {spellID = 108271, talentID = 127893},
@@ -82,7 +80,6 @@ local ConRO_Shaman, ids = ...;
 		WindRushTotem = {spellID = 192077, talentID = 127909},
 		PrimordialBond = {spellID = 381764, talentID = 127889},
 		SpiritwalkersGrace = {spellID = 79206, talentID = 127857},
-		AncestralGuidance = {spellID = 108281, talentID = 128116},
 		Thunderstorm = {spellID = 51490, talentID = 127878},
 		VoodooMastery = {spellID = 204268, talentID = 127875},
 		TotemicFocus = {spellID = 382201, talentID = 127906},
@@ -104,7 +101,7 @@ local ConRO_Shaman, ids = ...;
 		StoneBulwarkTotem = {spellID = 108270, talentID = 127911},
 		CalloftheElements = {spellID = 383011, talentID = 127867},
 		CreationCore = {spellID = 383012, talentID = 127866},
-	--Elemental
+	--Elemental Talents
 		EarthShock = {spellID = 8042, talentID = 101854},
 		ElementalBlast = {spellID = 117014, talentID = 127924},
 		Earthquake = {spellID = 462620, talentID = 101855},
@@ -155,7 +152,7 @@ local ConRO_Shaman, ids = ...;
 		DeeplyRootedElements = {spellID = 378270, talentID = 101864},
 		PrimalElementalist = {spellID = 117013, talentID = 127914},
 		LiquidMagmaTotem = {spellID = 192222, talentID = 101884},
-	--Hero
+	--Hero Talents
 	--Farseer
 		CalloftheAncestors = {spellID = 443450, talentID = 117485},
 		LatentWisdom = {spellID = 443449, talentID = 117459},
@@ -187,11 +184,11 @@ local ConRO_Shaman, ids = ...;
 		NaturesProtection = {spellID = 454027, talentID = 117477},
 		SurgingCurrents = {spellID = 454372, talentID = 125617},
 		AwakeningStorms = {spellID = 455129, talentID = 117464},
-	}
-	ids.Ele_Form = {
-		WindGust = 263806,
-	}
-	ids.Ele_Buff = {
+	},
+	pvp_talent = {
+
+	},
+	buff = {
 		Ascendance = 114050,
 		EarthShield = 974,
 		EarthShieldEO = 383648,
@@ -216,20 +213,22 @@ local ConRO_Shaman, ids = ...;
 		SurgingCurrents = 454376,
 		Tempest = 454015,
 		ThunderstrikeWard = 7587,
-	}
-	ids.Ele_Debuff = {
+		WindGust = 263806,
+	},
+	debuff = {
 		ElectrifiedShocks = 382089,
 		FlameShock = 188389,
-	}
-	ids.Ele_PetAbility = {
+	},
+	pet_ability = {
 		CallLightning = {spellID = 157348, talentID = 101849},
 		Tempest = {spellID = 157375, talentID = 101849},
 		Meteor = {spellID = 117588, talentID = 101850},
-	}
+	},
+}
 
---Enhancement
-	ids.Enh_Ability = {
-	--Shaman Baseline
+ids.enhancement = {
+	ability = {
+	--Baseline
 		AncestralSpirit = {spellID = 2008},
 		AstralRecall = {spellID = 556},
 		Bloodlust = {spellID = 2825},
@@ -244,13 +243,12 @@ local ConRO_Shaman, ids = ...;
 		LightningShield = {spellID = 192106},
 		PrimalStrike = {spellID = 73899},
 		Skyfury = {spellID = 462854},
+		Stormstrike = {spellID = 17364},
 		WaterWalking = {spellID = 546},
 		--Passive
-		Reincarnation = {spellID = 20608},
-	--Enhancement Baseline
-		--Passive
 		MasteryEnhancedElements = {spellID = 77223},
-	--Shaman
+		Reincarnation = {spellID = 20608},
+	--Shaman Talents
 		ChainHeal = {spellID = 1064, talentID = 127861},
 		LavaBurst = {spellID = 51505, talentID = 127873},
 		AstralShift = {spellID = 108271, talentID = 127893},
@@ -293,7 +291,6 @@ local ConRO_Shaman, ids = ...;
 		WindRushTotem = {spellID = 192077, talentID = 127909},
 		PrimordialBond = {spellID = 381764, talentID = 127889},
 		SpiritwalkersGrace = {spellID = 79206, talentID = 127857},
-		AncestralGuidance = {spellID = 108281, talentID = 128116},
 		Thunderstorm = {spellID = 51490, talentID = 127878},
 		VoodooMastery = {spellID = 204268, talentID = 127875},
 		TotemicFocus = {spellID = 382201, talentID = 127906},
@@ -315,36 +312,37 @@ local ConRO_Shaman, ids = ...;
 		StoneBulwarkTotem = {spellID = 108270, talentID = 127911},
 		CalloftheElements = {spellID = 383011, talentID = 127867},
 		CreationCore = {spellID = 383012, talentID = 127866},
-	--Enhancement
-		Stormstrike = {spellID = 17364, talentID = 101804},
+	--Enhancement Talents
+		maelstrom_weapon = {
+			passiveID = 187880,
+			talentID = 101804
+		},
 		WindfuryWeapon = {spellID = 33757, talentID = 101823},
 		LavaLash = {spellID = 60103, talentID = 101805},
 		ForcefulWinds = {spellID = 262647, talentID = 101834},
 		ImprovedMaelstromWeapon = {spellID = 383303, talentID = 101822},
 		MoltenAssault = {spellID = 334033, talentID = 101806},
 		UnrulyWinds = {spellID = 390288, talentID = 101833},
+		IceStrike40 = {passiveID = 466467, spellID = 342240, talentID = 101821},
+		IceStrike = {spellID = 470194, talentID = 128271},
+		RagingMaelstrom = {spellID = 384143, talentID = 101802},
 		TempestStrikes = {spellID = 428071, talentID = 101831},
 		ElementalBlast = {spellID = 117014, talentID = 117750},
-		RagingMaelstrom = {spellID = 384143, talentID = 101802},
-		IceStrikePassive = {spellID = 466467, talentID = 101821},
-			IceStrike40 = {spellID = 342240, talentID = 101821},
-		IceStrike = {spellID = 470194, talentID = 128271},
+		HotHand = {spellID = 201900, talentID = 101809},
+		DoomWinds = {spellID = 384352, talentID = 101824},
 		Hailstorm = {spellID = 334195, talentID = 101808},
 		FireNova = {spellID = 333974, talentID = 101807},
-		DoomWinds = {spellID = 384352, talentID = 101824},
-		Flurry = {spellID = 382888, talentID = 101799},
 		OverflowingMaelstrom = {spellID = 384149, talentID = 101801},
 		Sundering = {spellID = 197214, talentID = 101841},
-		SwirlingMaelstrom = {spellID = 384359, talentID = 101820},
-		HotHand = {spellID = 201900, talentID = 101809},
+		Flurry = {spellID = 382888, talentID = 101799},
+		AshenCatalyst = {spellID = 390370, talentID = 101811},
 		StormsWrath = {spellID = 392352, talentID = 101832},
+		SwirlingMaelstrom = {spellID = 384359, talentID = 101820},
 		CrashLightning = {spellID = 187874, talentID = 101840},
 		MoltenThunder = {spellID = 469344, talentID = 128237},
 		Stormflurry = {spellID = 344357, talentID = 101819},
-		AshenCatalyst = {spellID = 390370, talentID = 101811},
 		Stormblast = {spellID = 319930, talentID = 101825},
-		VoltaicBlazePassive = {spellID = 470053, talentID = 128270},
-			VoltaicBlaze = {spellID = 470057, talentID = 128270},
+		VoltaicBlaze = {passiveID = 470053, spellID = 470057, talentID = 128270},
 		ElementalWeapons = {spellID = 384355, talentID = 101826},
 		ConvergingStorms = {spellID = 384363, talentID = 101839},
 		UnrelentingStorms = {spellID = 470490, talentID = 128272},
@@ -355,17 +353,17 @@ local ConRO_Shaman, ids = ...;
 		DeeplyRootedElements = {spellID = 378270, talentID = 101816},
 		Ascendance = {spellID = 114051, talentID = 114291},
 			Windstrike = {spellID = 115356, talentID = 114291},
-		PrimalMaelstrom = {spellID = 384405, talentID = 101829},
+		SplinteredElements = {spellID = 382042, talentID = 101829},
 		ElementalAssault = {spellID = 210853, talentID = 101827},
 		WitchDoctorsAncestry = {spellID = 384447, talentID = 101837},
 		FlowingSpirits = {spellID = 469314, talentID = 128236},
 		LegacyoftheFrostWitch = {spellID = 384450, talentID = 101815},
 		StaticAccumulation = {spellID = 384411, talentID = 101814},
-		SplinteredElements = {spellID = 382042, talentID = 101828},
+		PrimordialStorm = {passiveID = 1218047, spellID = 1218090, talentID = 101828},
 		ElementalSpirits = {spellID = 262624, talentID = 101836},
 		AlphaWolf = {spellID = 198434, talentID = 101835},
 		ThorimsInvocation = {spellID = 384444, talentID = 101813},
-	--Hero
+	--Hero Talents
 	--Stormbringer
 		TempestPassive = {spellID = 454009, talentID = 117489},
 			Tempest = {spellID = 452201, talentID = 117489},
@@ -398,11 +396,11 @@ local ConRO_Shaman, ids = ...;
 		TotemicCoordination = {spellID = 445036, talentID = 117478},
 		Earthsurge = {spellID = 455590, talentID = 125822},
 		WhirlingElements = {spellID = 445024, talentID = 117476},
-	}
-	ids.Enh_Form = {
+	},
+	pvp_talent = {
 
-	}
-	ids.Enh_Buff = {
+	},
+	buff = {
 		Ascendance = 114051,
 		AshenCatalyst = 390371,
 		CrashLightning = 187878,
@@ -410,6 +408,7 @@ local ConRO_Shaman, ids = ...;
 		DoomWinds = 384352,
 		EarthShield = 974,
 		EarthShieldEO = 383648,
+		electrostatic_wager = 1223332,
 		ElementalSpirits = {
 			CracklingSurge = 224127,
 			IcyEdge = 224126,
@@ -426,6 +425,7 @@ local ConRO_Shaman, ids = ...;
 		IceStrikeFS = 384357,
 		LightningShield = 192106,
 		MaelstromWeapon = 344179,
+		PrimordialStorm = 1218125,
 		Skyfury = 462854,
 		Stormbringer = 201846,
 		Stormkeeper = 320137,
@@ -433,19 +433,17 @@ local ConRO_Shaman, ids = ...;
 		Tempest = 454015,
 		VoltaicBlaze = 470058,
 		WindfuryWeapon = 5401,
-	}
-	ids.Enh_Debuff = {
+	},
+	debuff = {
 		EarthenSpike = 188089,
 		FlameShock = 188389,
 		LashingFlames = 334168,
-	}
-	ids.Enh_PetAbility = {
+	},
+}
 
-	}
-
---Restoration
-	ids.Resto_Ability = {
-	--Shaman Baseline
+ids.restoration = {
+	ability = {
+	--Baseline
 		AncestralSpirit = {spellID = 2008},
 		AstralRecall = {spellID = 556},
 		Bloodlust = {spellID = 2825},
@@ -455,20 +453,19 @@ local ConRO_Shaman, ids = ...;
 		FlametongueWeapon = {spellID = 318038},
 		GhostWolf = {spellID = 2645},
 		HealingSurge = {spellID = 8004},
+		HealingWave = {spellID = 77472},
 		Heroism = {spellID = 32182},
 		LightningBolt = {spellID = 188196},
 		LightningShield = {spellID = 192106},
 		PrimalStrike = {spellID = 73899},
 		Skyfury = {spellID = 462854},
-		WaterWalking = {spellID = 546},
-		--Passive
-		Reincarnation = {spellID = 20608},
-	--Restoration Baseline
 		WaterShield = {spellID = 52127},
+		WaterWalking = {spellID = 546},
 		--Passive
 		LavaSurge = {spellID = 77756},
 		MasteryDeepHealing = {spellID = 77226},
-	--Shaman
+		Reincarnation = {spellID = 20608},
+	--Shaman Talents
 		ChainHeal = {spellID = 1064, talentID = 127861},
 		LavaBurst = {spellID = 51505, talentID = 127873},
 		AstralShift = {spellID = 108271, talentID = 127893},
@@ -511,7 +508,6 @@ local ConRO_Shaman, ids = ...;
 		WindRushTotem = {spellID = 192077, talentID = 127909},
 		PrimordialBond = {spellID = 381764, talentID = 127889},
 		SpiritwalkersGrace = {spellID = 79206, talentID = 127857},
-		AncestralGuidance = {spellID = 108281, talentID = 128116},
 		Thunderstorm = {spellID = 51490, talentID = 127878},
 		VoodooMastery = {spellID = 204268, talentID = 127875},
 		TotemicFocus = {spellID = 382201, talentID = 127906},
@@ -533,13 +529,13 @@ local ConRO_Shaman, ids = ...;
 		StoneBulwarkTotem = {spellID = 108270, talentID = 127911},
 		CalloftheElements = {spellID = 383011, talentID = 127867},
 		CreationCore = {spellID = 383012, talentID = 127866},
-	--Restoration
+	--Restoration Talents
 		Riptide = {spellID = 61295, talentID = 101905},
 		HealingRain = {spellID = 73920, talentID = 101923},
 		HealingStreamTotem2 = {spellID = 5394, talentID = 101900},
 		Deluge = {spellID = 200076, talentID = 127672},
 		AcidRain = {spellID = 378443, talentID = 101922},
-		HealingWave = {spellID = 77472, talentID = 101904},
+		HealingTideTotem = {spellID = 108280, talentID = 101912},
 		TidalWaves = {spellID = 51564, talentID = 101899},
 		OverflowingShores = {spellID = 383222, talentID = 114813},
 		AncestralVigor = {spellID = 207401, talentID = 127673},
@@ -551,17 +547,16 @@ local ConRO_Shaman, ids = ...;
 		LivingStream = {spellID = 382482, talentID = 101934},
 		CloudburstTotem = {spellID = 157153, talentID = 101933},
 		Torrent = {spellID = 200072, talentID = 101932},
-		HealingTideTotem = {spellID = 108280, talentID = 101912},
+		CurrentControl = {spellID = 404015, talentID = 114811},
+		TideTurner = {spellID = 404019, talentID = 114810},
 		SpoutingSpirits = {spellID = 462383, talentID = 127678},
-		ManaTideTotem = {spellID = 16191, talentID = 101929},
+		ManaTide = {spellID = 1217525, talentID = 101929},
+		SpiritwalkersTidalTotem = {spellID = 404522, talentID = 128704},
 		AncestralReach = {spellID = 382732, talentID = 101911},
 		FlowoftheTides = {spellID = 382039, talentID = 101910},
 		Undulation = {spellID = 200071, talentID = 101919},
 		UnleashLife = {spellID = 73685, talentID = 101918},
-		CurrentControl = {spellID = 404015, talentID = 114811},
-		TideTurner = {spellID = 404019, talentID = 114810},
 		EchooftheElements = {spellID = 333919, talentID = 101928},
-		SpiritwalkersTidalTotem = {spellID = 404522, talentID = 114817},
 		EarthenWallTotem = {spellID = 198838, talentID = 101931},
 		AncestralProtectionTotem = {spellID = 207399, talentID = 101930},
 		EarthlivingWeapon = {spellID = 382021, talentID = 101935},
@@ -576,15 +571,22 @@ local ConRO_Shaman, ids = ...;
 		WavespeakersBlessing = {spellID = 381946, talentID = 127671},
 		CoalescingWater = {spellID = 470076, talentID = 128332},
 		AncestralAwakening = {spellID = 382309, talentID = 101927},
-		ReactiveWarding = {spellID = 462454, talentID = 127681},
+		therazanes_resilience = {spellID = 1217622, talentID = 127681},
+		ReactiveWarding = {spellID = 462454, talentID = 128702},
 		ImprovedEarthlivingWeapon = {spellID = 382315, talentID = 101936},
-		PrimordialWave = {spellID = 428332, talentID = 101917},
-		DownpourPassive = {spellID = 462486, talentID = 101842},
-			Downpour = {spellID = 0, talentID = 101842},
+		whispering_waves = {
+			passiveID = 1217598,
+			talentID = 128703
+		},
+		Downpour = {
+			passiveID = 462486,
+			spellID = 462603,
+			talentID = 101842
+		},
 		HighTide = {spellID = 157154, talentID = 101925},
 		DeeplyRootedElements = {spellID = 378270, talentID = 101937},
 		Wellspring = {spellID = 197995, talentID = 127676},
-	--Hero
+	--Hero Talents
 	--Farseer
 		CalloftheAncestors = {spellID = 443450, talentID = 117485},
 		LatentWisdom = {spellID = 443449, talentID = 117459},
@@ -616,11 +618,11 @@ local ConRO_Shaman, ids = ...;
 		TotemicCoordination = {spellID = 445036, talentID = 117478},
 		Earthsurge = {spellID = 455590, talentID = 125822},
 		WhirlingElements = {spellID = 445024, talentID = 117476},
-	}
-	ids.Resto_Form = {
+	},
+	pvp_talent = {
 
-	}
-	ids.Resto_Buff = {
+	},
+	buff = {
 		EarthlivingWeapon = 6498,
 		EarthShield = 974,
 		EarthShieldEO = 383648,
@@ -628,10 +630,8 @@ local ConRO_Shaman, ids = ...;
 		LightningShield = 192106,
 		Skyfury = 462854,
 		WaterShield = 52127,
- 	}
-	ids.Resto_Debuff = {
+ 	},
+	debuff = {
 		FlameShock = 188389,
-	}
-	ids.Resto_PetAbility = {
-
-	}
+	},
+}
