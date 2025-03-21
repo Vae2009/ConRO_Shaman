@@ -109,6 +109,8 @@ local _enemies_in_25yrds, _target_in_25yrds = ConRO:Targets("25");
 local _enemies_in_40yrds, _target_in_40yrds = ConRO:Targets("40");
 local _can_Execute = _Target_Percent_Health < 20;
 
+local elemental_summoned = ConRO:CallPet();
+
 --Racials
 local _AncestralCall, _AncestralCall_RDY = _, _;
 local _ArcanePulse, _ArcanePulse_RDY = _, _;
@@ -138,6 +140,8 @@ function ConRO:Stats()
 	_enemies_in_25yrds, _target_in_25yrds = ConRO:Targets("25");
 	_enemies_in_40yrds, _target_in_40yrds = ConRO:Targets("40");
 	_can_Execute = _Target_Percent_Health < 20;
+
+	elemental_summoned = ConRO:CallPet();
 
 	_AncestralCall, _AncestralCall_RDY = ConRO:AbilityReady(Racial.AncestralCall, timeShift);
 	_ArcanePulse, _ArcanePulse_RDY = ConRO:AbilityReady(Racial.ArcanePulse, timeShift);
@@ -194,6 +198,8 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 		local _ThunderstrikeWard_BUFF, _, _ThunderstrikeWard_DUR = ConRO:UnitAura(Buff.ThunderstrikeWard, timeShift, _, _, "Weapon");
 	local _TotemicRecall, _TotemicRecall_RDY = ConRO:AbilityReady(Ability.TotemicRecall, timeShift);
 	local _WindShear, _WindShear_RDY = ConRO:AbilityReady(Ability.WindShear, timeShift);
+
+--Auras
 
 --Conditions
 	local _Shield_COUNT, _Shield_Threshold = 0, 1;
@@ -257,8 +263,8 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 	ConRO:AbilityPurge(_Purge, _Purge_RDY and ConRO:Purgable());
 
 	ConRO:AbilityBurst(_Thunderstorm, _Thunderstorm_RDY and ((ConRO:Interrupt() and not _WindShear_RDY and _target_in_melee) or (_target_in_melee and ConRO:TarYou())));
-	ConRO:AbilityBurst(_FireElemental, _FireElemental_RDY and not tChosen[Ability.StormElemental.talentID] and ConRO:BurstMode(_FireElemental, 150));
-	ConRO:AbilityBurst(_StormElemental, _StormElemental_RDY and ConRO:BurstMode(_StormElemental, 150));
+	ConRO:AbilityBurst(_FireElemental, _FireElemental_RDY and not elemental_summoned and not tChosen[Ability.StormElemental.talentID] and ConRO:BurstMode(_FireElemental, 150));
+	ConRO:AbilityBurst(_StormElemental, _StormElemental_RDY and not elemental_summoned and ConRO:BurstMode(_StormElemental, 150));
 	ConRO:AbilityBurst(_Ascendance, _Ascendance_RDY and ConRO:BurstMode(_Ascendance));
 	ConRO:AbilityBurst(_Stormkeeper, _Stormkeeper_RDY and currentSpell ~= _Stormkeeper and ConRO:BurstMode(_Stormkeeper));
 	ConRO:AbilityBurst(_LiquidMagmaTotem, _LiquidMagmaTotem_RDY and ConRO:BurstMode(_LiquidMagmaTotem));
@@ -276,14 +282,14 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 		while(true) do
 			if not _in_combat then
 				if tChosen[Ability.StormElemental.talentID] then
-					if _StormElemental_RDY and ConRO:FullMode(_StormElemental, 150) then
+					if _StormElemental_RDY and not elemental_summoned and ConRO:FullMode(_StormElemental, 150) then
 						tinsert(ConRO.SuggestedSpells, _StormElemental);
 						_StormElemental_RDY = false;
 						_Queue = _Queue + 1;
 						break;
 					end
 				else
-					if _FireElemental_RDY and ConRO:FullMode(_FireElemental, 150) then
+					if _FireElemental_RDY and not elemental_summoned and ConRO:FullMode(_FireElemental, 150) then
 						tinsert(ConRO.SuggestedSpells, _FireElemental);
 						_FireElemental_RDY = false;
 						_Queue = _Queue + 1;
@@ -298,7 +304,7 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 					break;
 				end
 
-				if _LavaBurst_RDY and currentSpell ~= _LavaBurst then
+				if _LavaBurst_RDY and _LavaBurst_CHARGES >= 1 and currentSpell ~= _LavaBurst then
 					tinsert(ConRO.SuggestedSpells, _LavaBurst);
 					_Maelstrom = _Maelstrom - _LavaBurst_COST;
 					_LavaBurst_CHARGES = _LavaBurst_CHARGES - 1;
@@ -333,14 +339,14 @@ function ConRO.Shaman.Elemental(_, timeShift, currentSpell, gcd, tChosen, pvpCho
 			end
 
 			if tChosen[Ability.StormElemental.talentID] then
-				if _StormElemental_RDY and ConRO:FullMode(_StormElemental, 150) then
+				if _StormElemental_RDY and not elemental_summoned and ConRO:FullMode(_StormElemental, 150) then
 					tinsert(ConRO.SuggestedSpells, _StormElemental);
 					_StormElemental_RDY = false;
 					_Queue = _Queue + 1;
 					break;
 				end
 			else
-				if _FireElemental_RDY and ConRO:FullMode(_FireElemental, 150) then
+				if _FireElemental_RDY and not elemental_summoned and ConRO:FullMode(_FireElemental, 150) then
 					tinsert(ConRO.SuggestedSpells, _FireElemental);
 					_FireElemental_RDY = false;
 					_Queue = _Queue + 1;
@@ -492,7 +498,7 @@ function ConRO.Shaman.ElementalDef(_, timeShift, currentSpell, gcd, tChosen, pvp
 --Conditions
 
 --Indicators
-	ConRO:AbilityBurst(_EarthElemental, _EarthElemental_RDY and ConRO:IsSolo() and ConRO:TarYou());
+	ConRO:AbilityBurst(_EarthElemental, _EarthElemental_RDY and not elemental_summoned and ConRO:IsSolo() and ConRO:TarYou());
 
 --Rotations
 	if _StoneBulwarkTotem_RDY and _Player_Percent_Health <= 25 then
